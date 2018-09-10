@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Contains Tiless stored with an
  * associated Position (x, y) in a map.
  */
-public class SparseTileArray extends Object {
+public class SparseTileArray {
 
     /**
      * Constructor for a SparseTileArray.

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A class to store a world map
  */
-public class WorldMap extends Object {
+public class WorldMap {
 
     /**
      * Constructs a new block world map from a startingTile, position and

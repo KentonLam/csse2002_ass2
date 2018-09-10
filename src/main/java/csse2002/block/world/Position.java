@@ -6,7 +6,7 @@ import java.util.Objects;
  * Represents the position of a Tile
  * in the SparseTileArray
  */
-public class Position extends Object implements Comparable<Position> {
+public class Position implements Comparable<Position> {
 
     /** X position. */
     private final int x;
