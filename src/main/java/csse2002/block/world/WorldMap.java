@@ -1,5 +1,8 @@
 package csse2002.block.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class to store a world map
  */
@@ -112,13 +115,17 @@ public class WorldMap extends Object {
      * Gets the builder associated with this block world.
      * @return the builder object
      */
-    public csse2002.block.world.Builder getBuilder() {}
+    public csse2002.block.world.Builder getBuilder() {
+        return new Builder("DUMMY", new Tile());
+    }
 
     /**
      * Gets the starting position.
      * @return the starting position.
      */
-    public Position getStartPosition() {}
+    public Position getStartPosition() {
+        return new Position(0, 0);
+    }
 
     /**
      * Get a tile by position. 
@@ -127,7 +134,9 @@ public class WorldMap extends Object {
      * @return the tile at that position
      * @require position != null
      */
-    public csse2002.block.world.Tile getTile(Position position) {}
+    public csse2002.block.world.Tile getTile(Position position) {
+        return new Tile();
+    }
 
     /**
      * Get a list of tiles in a breadth-first-search
@@ -136,7 +145,9 @@ public class WorldMap extends Object {
      * Hint: call SparseTileArray.getTiles().
      * @return a list of ordered tiles
      */
-    public java.util.List<csse2002.block.world.Tile> getTiles() {}
+    public java.util.List<csse2002.block.world.Tile> getTiles() {
+        return new ArrayList<Tile>();
+    }
 
     /**
      * Saves the given WorldMap to a file specified by the filename. 
