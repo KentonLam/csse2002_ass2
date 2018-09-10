@@ -51,8 +51,11 @@ public class Position extends Object implements Comparable<Position> {
      */
     @Override
     public boolean equals(Object obj) {
+        if (!(obj instanceof Position)) {
+            return false;
+        }
         Position other = (Position)obj;
-        return this.x == other.x && this.y == other.y;
+        return this.x == other.getX() && this.y == other.getY();
     }
 
     /**
@@ -81,12 +84,12 @@ public class Position extends Object implements Comparable<Position> {
      * @return -1, 0, or 1 depending on conditions above
      */
     public int compareTo(Position other) {
-        if (this.getX() != other.getX()) {
-            return Integer.signum(this.getX() - other.getX());
+        if (this.x != other.getX()) {
+            return Integer.signum(this.x - other.getX());
         }
         // At this point, we know the x components are equal, so the result
         // depends only on the y components.
-        return Integer.signum(this.getY() - other.getY());
+        return Integer.signum(this.y - other.getY());
     }
 
     /**
