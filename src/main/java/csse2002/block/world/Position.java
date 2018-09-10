@@ -1,30 +1,43 @@
 package csse2002.block.world;
 
+import java.util.Objects;
+
 /**
  * Represents the position of a Tile
  * in the SparseTileArray
  */
 public class Position extends Object implements Comparable<Position> {
 
+    /** X position. */
+    private final int x;
+    /** Y position. */
+    private final int y;
+
     /**
      * Construct a position for (x, y)
      * @param x the x coordinate
      * @param y the y coordinate
      */
-    public Position(int x,
-                    int y) {}
+    public Position(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     /**
-     * Get the x coordinate
-     * @return the x coordinate
+     * Returns the x coordinate.
+     * @return the x coordinate.
      */
-    public int getX() {}
+    public int getX() {
+        return this.x;
+    }
 
     /**
-     * Get the y coordinate
-     * @return the y coordinate
+     * Returns the y coordinate.
+     * @return the y coordinate.
      */
-    public int getY() {}
+    public int getY() {
+        return this.y;
+    }
 
     /**
      * Indicates whether some other object is "equal to" this one.
@@ -36,7 +49,11 @@ public class Position extends Object implements Comparable<Position> {
      * @return true if obj is an instance of
      *  Position and if obj.x == x and obj.y == y.
      */
-    public boolean equals(Object obj) {}
+    @Override
+    public boolean equals(Object obj) {
+        Position other = (Position)obj;
+        return this.x == other.x && this.y == other.y;
+    }
 
     /**
      * Compute a hashCode that
@@ -45,7 +62,10 @@ public class Position extends Object implements Comparable<Position> {
      * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
      * @return a suitable hashcode for the Position
      */
-    public int hashCode() {}
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.x, this.y);
+    }
 
     /**
      * Compare this position to another position. 
@@ -60,7 +80,14 @@ public class Position extends Object implements Comparable<Position> {
      * @param other the other Position to compare to
      * @return -1, 0, or 1 depending on conditions above
      */
-    public int compareTo(Position other) {}
+    public int compareTo(Position other) {
+        if (this.getX() != other.getX()) {
+            return Integer.signum(this.getX() - other.getX());
+        }
+        // At this point, we know the x components are equal, so the result
+        // depends only on the y components.
+        return Integer.signum(this.getY() - other.getY());
+    }
 
     /**
      * Convert this position to a string. 
@@ -70,6 +97,9 @@ public class Position extends Object implements Comparable<Position> {
      * Note the space following the comma.
      * @return a string representation of the position "(<x>, <y>)"
      */
-    public String toString() {}
+    @Override
+    public String toString() {
+        return "("+this.x+", "+this.y+")";
+    }
 
 }
