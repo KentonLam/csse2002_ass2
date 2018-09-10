@@ -24,9 +24,9 @@ public class WorldMap extends Object {
      *          position)
      * @require startingTile != null, startPosition != null, builder != null
      */
-    public WorldMap(csse2002.block.world.Tile startingTile,
+    public WorldMap(Tile startingTile,
                     Position startPosition,
-                    csse2002.block.world.Builder builder)
+                    Builder builder)
              throws WorldMapInconsistentException {}
 
     /**
@@ -115,7 +115,7 @@ public class WorldMap extends Object {
      * Gets the builder associated with this block world.
      * @return the builder object
      */
-    public csse2002.block.world.Builder getBuilder() {
+    public Builder getBuilder() {
         return new Builder("DUMMY", new Tile());
     }
 
@@ -134,7 +134,7 @@ public class WorldMap extends Object {
      * @return the tile at that position
      * @require position != null
      */
-    public csse2002.block.world.Tile getTile(Position position) {
+    public Tile getTile(Position position) {
         return new Tile();
     }
 
@@ -145,7 +145,7 @@ public class WorldMap extends Object {
      * Hint: call SparseTileArray.getTiles().
      * @return a list of ordered tiles
      */
-    public java.util.List<csse2002.block.world.Tile> getTiles() {
+    public java.util.List<Tile> getTiles() {
         return new ArrayList<Tile>();
     }
 

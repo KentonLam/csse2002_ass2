@@ -25,7 +25,7 @@ public class SparseTileArray extends Object {
      *          no such tile exists.
      * @require position != null
      */
-    public csse2002.block.world.Tile getTile(Position position) {}
+    public Tile getTile(Position position) {}
 
     /**
      * Get a set of ordered tiles from SparseTileArray in
@@ -41,7 +41,7 @@ public class SparseTileArray extends Object {
      * @return a list of tiles in breadth-first-search
      *          order.
      */
-    public java.util.List<csse2002.block.world.Tile> getTiles() {}
+    public java.util.List<Tile> getTiles() {}
 
     /**
      * Add a set of tiles to the sparse tilemap. 
@@ -89,7 +89,7 @@ public class SparseTileArray extends Object {
      * @require startingTile != null
      * @ensure tiles accessed through getTile() are geometrically consistent
      */
-    public void addLinkedTiles(csse2002.block.world.Tile startingTile,
+    public void addLinkedTiles(Tile startingTile,
                                int startingX,
                                int startingY)
                         throws WorldMapInconsistentException {}
