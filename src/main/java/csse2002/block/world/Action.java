@@ -9,28 +9,35 @@ package csse2002.block.world;
  * a direction, digging on the current tile the builder is standing on and
  * dropping an item from a builder's inventory.
  */
-public class Action extends Object {
+
+public class Action {
+
+    // TODO: These should really be represented as an enum class.
+    /**
+     * MOVE_BUILDER action which is represented by integer 0.
+     */
+    public static final int MOVE_BUILDER = 0;
 
     /**
-     * MOVE_BUILDER action which is represented by
-     * integer 0
+     * MOVE_BLOCK action which is represented by integer 1.
      */
-    public static final int MOVE_BUILDER;
+    public static final int MOVE_BLOCK = 1;
 
     /**
-     * MOVE_BLOCK action which is represented by integer 1
+     * DIG action which is represented by integer 2.
      */
-    public static final int MOVE_BLOCK;
+    public static final int DIG = 2;
 
     /**
-     * DIG action which is represented by integer 2
+     * DROP action which is represented by integer 3.
      */
-    public static final int DIG;
+    public static final int DROP = 3;
 
-    /**
-     * DROP action which is represented by integer 3
-     */
-    public static final int DROP;
+    /** Integer representing the action. */
+    private final int primaryAction;
+
+    /** String representing parameters of the action */
+    private final String secondaryAction;
 
     /**
      * Create an Action that represents a manipulation of the blockworld.
@@ -56,21 +63,27 @@ public class Action extends Object {
      *                         primary action
      * @require secondaryAction != null
      */
-    public Action(int primaryAction,
-                  String secondaryAction) {}
+    public Action(int primaryAction, String secondaryAction) {
+        this.primaryAction = primaryAction;
+        this.secondaryAction = secondaryAction;
+    }
 
     /**
      * Get the integer representing the Action (e.g., return 0 if Action is MOVE_BUILDER)
      * @return the primary action
      */
-    public int getPrimaryAction() {}
+    public int getPrimaryAction() {
+        return this.primaryAction;
+    }
 
     /**
      * Gets the supplementary information associated with the Action
      * @return the secondary action, or "" (empty string) if no secondary
      *  action exists
      */
-    public String getSecondaryAction() {}
+    public String getSecondaryAction() {
+        return this.secondaryAction;
+    }
 
     /**
      * Create a single Action if possible from the given reader. 
@@ -93,7 +106,10 @@ public class Action extends Object {
      * @require reader != null
      */
     public static Action loadAction(java.io.BufferedReader reader)
-                             throws ActionFormatException {}
+                             throws ActionFormatException {
+        // TODO: Implement Action.loadAction().
+        return new Action(0, "DUMMY");
+    }
 
     /**
      * Read all the actions from the given reader and perform them on the
@@ -181,7 +197,9 @@ public class Action extends Object {
      */
     public static void processActions(java.io.BufferedReader reader,
                                       WorldMap startingMap)
-                               throws ActionFormatException {}
+                               throws ActionFormatException {
+        // TODO: Implement processActions(), but do processAction() first.
+    }
 
     /**
      * Perform the given action on a WorldMap, and print output to System.out.
@@ -224,7 +242,8 @@ public class Action extends Object {
      * @param map the map to perform the action on
      * @require action != null, map != null
      */
-    public static void processAction(Action action,
-                                     WorldMap map) {}
+    public static void processAction(Action action, WorldMap map) {
+        // TODO: Implement processAction()
+    }
 
 }
