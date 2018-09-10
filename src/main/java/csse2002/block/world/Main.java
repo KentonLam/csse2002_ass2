@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * Handles top-level interaction with performing actions on a WorldMap
  */

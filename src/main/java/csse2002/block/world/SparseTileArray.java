@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * A sparse representation of tiles in an Array. 
  * Contains Tiless stored with an

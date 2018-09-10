@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * Represents an Action which can be performed on the block world (also
  * called world map). 

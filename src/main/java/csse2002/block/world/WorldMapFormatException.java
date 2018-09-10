@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * A World Map file contains the wrong format.
  */

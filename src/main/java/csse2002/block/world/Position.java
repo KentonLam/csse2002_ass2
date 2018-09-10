@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * Represents the position of a Tile
  * in the SparseTileArray

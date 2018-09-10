@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /**
  * A class to store a world map
  */
