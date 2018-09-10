@@ -1,6 +1,5 @@
 /**
  * A class to store a world map
- *
  */
 public class WorldMap extends Object {
 

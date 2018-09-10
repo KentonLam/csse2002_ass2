@@ -1,11 +1,9 @@
 /**
  * Handles top-level interaction with performing actions on a WorldMap
- *
  */
 public class Main extends Object {
 
     /**
-     * 
      *
      */
     public Main() {}

@@ -2,7 +2,6 @@
  * A sparse representation of tiles in an Array. 
  * Contains Tiless stored with an
  * associated Position (x, y) in a map.
- *
  */
 public class SparseTileArray extends Object {
 
@@ -10,7 +9,6 @@ public class SparseTileArray extends Object {
      * Constructor for a SparseTileArray.
      * Initializes an empty array, such that
      * getTile(x, y) returns null for any x and y.
-     *
      */
     public SparseTileArray() {}
 

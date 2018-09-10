@@ -6,9 +6,29 @@
  * The actions include, moving the builder in a direction, moving a block in
  * a direction, digging on the current tile the builder is standing on and
  * dropping an item from a builder's inventory.
- *
  */
 public class Action extends Object {
+
+    /**
+     * MOVE_BUILDER action which is represented by
+     * integer 0
+     */
+    public static final int MOVE_BUILDER;
+
+    /**
+     * MOVE_BLOCK action which is represented by integer 1
+     */
+    public static final int MOVE_BLOCK;
+
+    /**
+     * DIG action which is represented by integer 2
+     */
+    public static final int DIG;
+
+    /**
+     * DROP action which is represented by integer 3
+     */
+    public static final int DROP;
 
     /**
      * Create an Action that represents a manipulation of the blockworld.

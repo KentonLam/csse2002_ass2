@@ -1,7 +1,6 @@
 /**
  * Represents the position of a Tile
  * in the SparseTileArray
- *
  */
 public class Position extends Object implements Comparable<Position> {
 
