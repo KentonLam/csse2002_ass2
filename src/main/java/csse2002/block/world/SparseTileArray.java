@@ -1,5 +1,7 @@
 package csse2002.block.world;
 
+import java.util.ArrayList;
+
 /**
  * A sparse representation of tiles in an Array. 
  * Contains Tiless stored with an
@@ -25,7 +27,9 @@ public class SparseTileArray extends Object {
      *          no such tile exists.
      * @require position != null
      */
-    public Tile getTile(Position position) {}
+    public Tile getTile(Position position) {
+        return new Tile();
+    }
 
     /**
      * Get a set of ordered tiles from SparseTileArray in
@@ -41,7 +45,9 @@ public class SparseTileArray extends Object {
      * @return a list of tiles in breadth-first-search
      *          order.
      */
-    public java.util.List<Tile> getTiles() {}
+    public java.util.List<Tile> getTiles() {
+        return new ArrayList<>();
+    }
 
     /**
      * Add a set of tiles to the sparse tilemap. 
