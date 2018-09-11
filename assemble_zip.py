@@ -29,11 +29,11 @@ def do_zip_assemble(config):
                 os.unlink(src_files['src_path'] + '/' + f)
             else:
                 print('    Kept', f)
-    else:
-        print('Not deleting spurious source files...')
 
-    print('Executing tests...')
-    subprocess.check_call(['mvn', 'clean', 'test', '-B'], shell=True)
+        print('Executing tests...')
+        subprocess.check_call(['mvn', 'clean', 'test', '-B'], shell=True)
+    else:
+        print('Skipped clean testing...')
 
     print('Compiling artifact zip...')
 
