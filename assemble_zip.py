@@ -5,43 +5,35 @@ import sys
 import zipfile
 import shutil
 import subprocess
-
-src_files = {
-    'src_path': 'src/main/java/',
-    'dest_path': 'src/',
-    'include': [ x+'.java' for x in
-        ('Block', 'BlockWorldException', 'Builder', 'GrassBlock',
-        'GroundBlock', 'InvalidBlockException', 'NoExitException',
-        'SoilBlock', 'StoneBlock', 'Tile', 'TooHighException',
-        'TooLowException', 'WoodBlock')
-    ]
-}
-
-test_files = {
-    'src_path': 'src/test/java/',
-    'dest_path': 'test/',
-    'include': [
-        'GrassBlockTest.java', 'TileTest.java'
-    ]
-}
+import json
 
 
-def main():
-    print('Starting artifact build...')
+
+
+def do_zip_assemble(config):
+    print('Starting artifact build with config:')
+    print(json.dumps(config, indent=4))
+    
+    src_files = config['src'] # type: dict
+    test_files = config['test']
+
     print('Copying to temp directory...')
     shutil.copytree('.', './__temp')
     os.chdir('./__temp')
 
-    print('Deleting spurious source files...')
-    for f in os.listdir(src_files['src_path']):
-        if f not in src_files['include']:
-            print('    Deleted', f)
-            os.unlink(src_files['src_path'] + '/' + f)
-        else:
-            print('    Kept', f)
+    if src_files.get('clean', True):
+        print('Deleting spurious source files before test...')
+        for f in os.listdir(src_files['src_path']):
+            if f not in src_files['include']:
+                print('    Deleted', f)
+                os.unlink(src_files['src_path'] + '/' + f)
+            else:
+                print('    Kept', f)
+    else:
+        print('Not deleting spurious source files...')
 
     print('Executing tests...')
-    subprocess.check_call(['mvn clean test -B'], shell=True)
+    subprocess.check_call(['mvn', 'clean', 'test', '-B'], shell=True)
 
     print('Compiling artifact zip...')
 
@@ -63,7 +55,9 @@ def main():
     print('Done.')
 
 
-
+def main():
+    with open('zip_structure.json') as f:
+        do_zip_assemble(json.load(f))
 
 
 if __name__ == '__main__':
