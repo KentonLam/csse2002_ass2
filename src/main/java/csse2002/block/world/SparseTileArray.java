@@ -16,12 +16,64 @@ public class SparseTileArray {
      */
     private class TileAtPos
             extends AbstractMap.SimpleImmutableEntry<Tile, Position> {
-        public final Tile tile;
-        public final Position position;
+        private Tile tile;
+        private final Position position;
+
         private TileAtPos(Tile tile, Position pos) {
             super(tile, pos);
             this.tile = tile;
-            position = pos;
+            this.position = pos;
+        }
+    }
+
+    /**
+     * Helper class containing arithmetic operations for Position objects.
+     */
+    private static class PosFunc {
+        private static Position add(Position p1, Position p2) {
+            return new Position(p1.getX()+p2.getX(), p1.getY()+p2.getY());
+        }
+        private static Position neg(Position pos) {
+            return new Position(-pos.getX(), -pos.getY());
+        }
+    }
+
+    /**
+     * Represents cardinal directions, as well as relations between directions
+     * and their representation as a Position shift.
+     */
+    private enum Direction {
+        north(0, -1, "south"),
+        east(1, 0, "west"),
+        south(0, 1, "north"),
+        west(-1, 0, "east");
+
+        private final String oppositeName;
+        private final Position position;
+
+        /**
+         * Creates a Direction object.
+         * @param x Shift in the x direction.
+         * @param y Shift in the y direction.
+         * @param oppositeName Name of the direction opposite this.
+         */
+        Direction(int x, int y, String oppositeName) {
+            this.oppositeName = oppositeName;
+            position = new Position(x, y);
+        }
+
+        /**
+         * Returns the direction value of the compass direction opposite this.
+         * */
+        Direction opposite() {
+            return Direction.valueOf(oppositeName);
+        }
+
+        /**
+         * Returns this direction as a change in position.
+         */
+        Position position() {
+            return position;
         }
     }
 
@@ -197,11 +249,11 @@ public class SparseTileArray {
 
             Map<String, Tile> exits = currentTile.getExits();
             // Iterate over the directions in order of N, E, S, W.
-            for (String direction : directionShifts.keySet()) {
-                if (exits.containsKey(direction)) {
-                    Tile adjTile = exits.get(direction);
+            for (Direction dir : Direction.values()) {
+                if (exits.containsKey(dir.name())) {
+                    Tile adjTile = exits.get(dir.name());
                     Map<String, Tile> adjExits = adjTile.getExits();
-                    String opposite = oppDir(direction);
+                    String opposite = dir.opposite().name();
 
                     // If the adjacent tile has an exit in our direction
                     // but it is not this tile, the map is inconsistent.
@@ -213,39 +265,11 @@ public class SparseTileArray {
                     // All good, queue the adjacent tile to be processed.
                     tilesToCheck.add(new TileAtPos(
                             adjTile,
-                            shiftPos(direction, currentPos)
+                            PosFunc.add(currentPos, dir.position())
                     ));
                 }
             }
         }
         return true;
     }
-
-    /** Returns the direction opposite the given cardinal direction. */
-    private String oppDir(String originalDirection) {
-        switch (originalDirection) {
-            case "north":
-                return "south";
-            case "east":
-                return "west";
-            case "south":
-                return "north";
-            case "west":
-                return "west";
-        }
-        throw new IllegalArgumentException(
-                "Unknown direction: "+originalDirection);
-    }
-
-    /** Returns the given position shifted one unit in the given direction. */
-    private Position shiftPos(String direction, Position position) {
-        return addPos(position, directionShifts.get(direction));
-    }
-
-    /** Returns the component-wise sum of the given position vectors. */
-    private Position addPos(Position pos1, Position pos2) {
-        return new Position(
-                pos1.getX()+pos2.getX(), pos1.getY()+pos2.getY());
-    }
-
 }
