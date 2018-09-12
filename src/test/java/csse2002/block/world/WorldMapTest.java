@@ -53,7 +53,7 @@ public class WorldMapTest {
     }
 
     @Test
-    public void testBasicMapInitialPosition() throws Exception {
+    public void testBasicMapInitialPosition() {
         assertEquals("Initial position wrong.", new Position(11, 7),
                 basicMap.getStartPosition());
     }
@@ -119,6 +119,12 @@ public class WorldMapTest {
     public void testEmptyMapStartingInventory() {
         assertEquals("Inventory not empty.",
                 0, emptyMap.getBuilder().getInventory().size());
+    }
+
+    @Test
+    public void testEmptyMapGetTiles() {
+        assertEquals("Minimal map should have exactly 1 tile.",
+                1, emptyMap.getTiles().size());
     }
 
     @Test
