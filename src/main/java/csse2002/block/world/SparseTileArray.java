@@ -242,15 +242,6 @@ public class SparseTileArray {
             for (Direction dir : Direction.values()) {
                 if (exits.containsKey(dir.name())) {
                     Tile adjTile = exits.get(dir.name());
-                    Map<String, Tile> adjExits = adjTile.getExits();
-                    String opposite = dir.opposite().name();
-
-                    // If the adjacent tile has an exit in our direction
-                    // but it is not this tile, the map is inconsistent.
-                    if (adjExits.containsKey(opposite)
-                            && !adjExits.get(opposite).equals(currentTile)) {
-                        return false;
-                    }
 
                     // All good, queue the adjacent tile to be processed.
                     tilesToCheck.add(new TileAtPos(
