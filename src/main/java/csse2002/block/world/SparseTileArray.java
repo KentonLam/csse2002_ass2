@@ -199,19 +199,18 @@ public class SparseTileArray {
             // Iterate over the directions in order of N, E, S, W.
             for (String direction : directionShifts.keySet()) {
                 if (exits.containsKey(direction)) {
-                    // If the exit exists, queue it to be processed.
                     Tile adjTile = exits.get(direction);
-                    // If the adjacent tile has an exit in this tile's
-                    // direction, it must equal this tile.
                     Map<String, Tile> adjExits = adjTile.getExits();
-                    // Stores the reverse direction.
                     String opposite = oppDir(direction);
-                    if (adjExits.containsKey(opposite)) {
-                        if (!adjExits.get(opposite).equals(currentTile)) {
-                            return false;
-                        }
+
+                    // If the adjacent tile has an exit in our direction
+                    // but it is not this tile, the map is inconsistent.
+                    if (adjExits.containsKey(opposite)
+                            && !adjExits.get(opposite).equals(currentTile)) {
+                        return false;
                     }
 
+                    // All good, queue the adjacent tile to be processed.
                     tilesToCheck.add(new TileAtPos(
                             adjTile,
                             shiftPos(direction, currentPos)
