@@ -1,7 +1,7 @@
 package csse2002.block.world;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 
 /**
  * A sparse representation of tiles in an Array. 
@@ -11,11 +11,50 @@ import java.util.List;
 public class SparseTileArray {
 
     /**
+     * Helper class for a 2-tuple of tile and a position.
+     * Used during the BFS as a queue item.
+     */
+    private class TileAtPos
+            extends AbstractMap.SimpleImmutableEntry<Tile, Position> {
+        public final Tile tile;
+        public final Position position;
+        private TileAtPos(Tile tile, Position pos) {
+            super(tile, pos);
+            this.tile = tile;
+            this.position = pos;
+        }
+    }
+
+    /**
+     * Ordered hash map of direction names to their position shifts.
+     * Used when iterating through a tile's exits.
+     */
+    private final LinkedHashMap<String, Position> directionShifts =
+            new LinkedHashMap<String, Position>() {{
+        put("north", new Position(0, -1));
+        put("east", new Position(1, 0));
+        put("south", new Position(0, 1));
+        put("west", new Position(-1, 0));
+    }};
+
+    /** Set of inserted tiles, in BFS order relative to a starting tile. */
+    private List<Tile> insertedTiles = new ArrayList<>();
+
+    /** Mapping of position to tiles. */
+    private HashMap<Position, Tile> positionToTile = new HashMap<>();
+
+    /**
      * Constructor for a SparseTileArray.
      * Initializes an empty array, such that
      * getTile(x, y) returns null for any x and y.
      */
-    public SparseTileArray() {}
+    public SparseTileArray() {
+    }
+
+    private void clearInternalState() {
+        insertedTiles.clear();
+        positionToTile.clear();
+    }
 
     /**
      * Get the tile at position (x, y). Return
@@ -29,7 +68,7 @@ public class SparseTileArray {
      * @require position != null
      */
     public Tile getTile(Position position) {
-        return new Tile();
+        return positionToTile.get(position);
     }
 
     /**
@@ -47,7 +86,7 @@ public class SparseTileArray {
      *          order.
      */
     public List<Tile> getTiles() {
-        return new ArrayList<>();
+        return insertedTiles;
     }
 
     /**
@@ -96,13 +135,107 @@ public class SparseTileArray {
      * @require startingTile != null
      * @ensure tiles accessed through getTile() are geometrically consistent
      */
-    public void addLinkedTiles(Tile startingTile,
-                               int startingX,
-                               int startingY)
-                        throws WorldMapInconsistentException {
+    public void addLinkedTiles(Tile startingTile, int startingX, int startingY)
+            throws WorldMapInconsistentException {
+        boolean success = breadthFirstAddLinkedTiles(
+                startingTile, new Position(startingX, startingY));
+        if (!success) {
+            throw new WorldMapInconsistentException();
+        }
         // TODO: Implement addLinkedTiles.
         // TODO: Use a mapping of tile to position for seen.
         // TODO: Use a mapping of tile to position for queue, where position is new position for tile.
+    }
+
+    private boolean breadthFirstAddLinkedTiles(Tile startingTile,
+                                               Position startingPos) {
+        // Initialise queue with starting tile.
+        Queue<TileAtPos> tilesToCheck = new LinkedList<>();
+        tilesToCheck.add(new TileAtPos(startingTile, startingPos));
+
+        while (!tilesToCheck.isEmpty()) {
+            // Extract the next tile in the queue.
+            TileAtPos tileAtPos = tilesToCheck.remove();
+            Tile currentTile = tileAtPos.tile;
+            Position currentPos = tileAtPos.position;
+
+            // The following 'if' logic makes sure each tile exists in only
+            // one position.
+            if (insertedTiles.contains(currentTile)) {
+                // The tile has already been encountered.
+                if (positionToTile.containsKey(currentPos)
+                        && positionToTile.get(currentPos).equals(currentTile)) {
+                    // All good, the tile has been seen at the same position.
+                    continue;
+                } else {
+                    // Inconsistent map. This tile has already been placed
+                    // elsewhere.
+                    return false;
+                }
+            }
+
+            // The following makes sure each position only contains one tile.
+            if (positionToTile.containsKey(currentPos)) {
+                // If we reach here, then this tile hasn't been placed before.
+                // However, there already exists a different tile in its
+                // position. This is geometrically inconsistent; return false
+                // so addLinkedTiles throws.
+                return false;
+            }
+
+            // Add
+            positionToTile.put(currentPos, currentTile);
+            insertedTiles.add(currentTile);
+
+            Map<String, Tile> exits = currentTile.getExits();
+            // Iterate over the directions in order of N, E, S, W.
+            for (String direction : directionShifts.keySet()) {
+                if (exits.containsKey(direction)) {
+                    // If the exit exists, queue it to be processed.
+                    Tile adjTile = exits.get(direction);
+                    // If the adjacent tile has an exit in this tile's
+                    // direction, it must equal this tile.
+                    Map<String, Tile> adjExits = adjTile.getExits();
+                    // Stores the reverse direction.
+                    String opposite = oppDir(direction);
+                    if (adjExits.containsKey(opposite)) {
+                        if (!adjExits.get(opposite).equals(currentTile)) {
+                            return false;
+                        }
+                    }
+
+                    tilesToCheck.add(new TileAtPos(
+                            adjTile,
+                            shiftPos(direction, currentPos)
+                    ));
+                }
+            }
+        }
+        return true;
+    }
+
+    private String oppDir(String originalDirection) {
+        switch (originalDirection) {
+            case "north":
+                return "south";
+            case "east":
+                return "west";
+            case "south":
+                return "north";
+            case "west":
+                return "west";
+        }
+        throw new IllegalArgumentException(
+                "Unknown direction: "+originalDirection);
+    }
+
+    private Position shiftPos(String direction, Position position) {
+        return addPos(position, directionShifts.get(direction));
+    }
+
+    private Position addPos(Position pos1, Position pos2) {
+        return new Position(
+                pos1.getX()+pos2.getX(), pos1.getY()+pos2.getY());
     }
 
 }
