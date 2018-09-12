@@ -99,6 +99,10 @@ public class SparseTileArray {
     public void addLinkedTiles(Tile startingTile,
                                int startingX,
                                int startingY)
-                        throws WorldMapInconsistentException {}
+                        throws WorldMapInconsistentException {
+        // TODO: Implement addLinkedTiles.
+        // TODO: Use a mapping of tile to position for seen.
+        // TODO: Use a mapping of tile to position for queue, where position is new position for tile.
+    }
 
 }
