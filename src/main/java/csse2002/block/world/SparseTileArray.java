@@ -126,6 +126,8 @@ public class SparseTileArray {
      *          order.
      */
     public List<Tile> getTiles() {
+        // Because addLinkedTiles is implemented as BFS, we simply cache
+        // the result of that and return it here.
         return insertedTiles;
     }
 
@@ -178,7 +180,7 @@ public class SparseTileArray {
     public void addLinkedTiles(Tile startingTile, int startingX, int startingY)
             throws WorldMapInconsistentException {
         // We offload the actual computations to a helper function so we can
-        // cleanup then throw here in one place.
+        // cleanup then throw here in one place instead of three.
         boolean success = breadthFirstAddLinkedTiles(
                 startingTile, new Position(startingX, startingY));
         if (!success) {
