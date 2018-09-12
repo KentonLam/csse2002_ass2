@@ -11,7 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class WorldMapTest {
+    /**
+     * A minimal map of a builder with no name, an empty inventory and
+     * a single tile with no exits and no blocks.
+     */
     private WorldMap emptyMap;
+    /**
+     * A basic map with no abnormal features.
+     */
     private WorldMap basicMap;
 
     @Before
@@ -97,13 +104,25 @@ public class WorldMapTest {
     }
 
     @Test
-    public void testConstructorFromFileEmpty() throws Exception {
+    public void testEmptyMapBuilderName() {
         assertEquals("Builder name not empty.",
                 "", emptyMap.getBuilder().getName());
+    }
+
+    @Test
+    public void testEmptyMapInitialPosition() {
         assertEquals("Initial position wrong.",
                 new Position(11, 7), emptyMap.getStartPosition());
+    }
+
+    @Test
+    public void testEmptyMapStartingInventory() {
         assertEquals("Inventory not empty.",
                 0, emptyMap.getBuilder().getInventory().size());
+    }
+
+    @Test
+    public void testEmptyMapTileBlocks() {
         assertEquals("Tile not empty.", 0,
                 emptyMap.getTile(new Position(11, 7)).getBlocks().size());
     }
