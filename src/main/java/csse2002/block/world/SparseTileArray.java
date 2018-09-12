@@ -21,7 +21,7 @@ public class SparseTileArray {
         private TileAtPos(Tile tile, Position pos) {
             super(tile, pos);
             this.tile = tile;
-            this.position = pos;
+            position = pos;
         }
     }
 
@@ -29,7 +29,7 @@ public class SparseTileArray {
      * Ordered hash map of direction names to their position shifts.
      * Used when iterating through a tile's exits.
      */
-    private final LinkedHashMap<String, Position> directionShifts =
+    private static final LinkedHashMap<String, Position> directionShifts =
             new LinkedHashMap<String, Position>() {{
         put("north", new Position(0, -1));
         put("east", new Position(1, 0));
