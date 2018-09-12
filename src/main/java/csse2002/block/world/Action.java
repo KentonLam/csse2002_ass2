@@ -42,7 +42,7 @@ public class Action {
     /**
      * Create an Action that represents a manipulation of the blockworld.
      * An action is represented by a primary action (one of MOVE_BUILDER,
-     * MOVE_BLOCK, DIG or DROP), and a secondary action 
+     * MOVE_BLOCK, DIG or DROP), and a secondary action
      * 
      * Whether a secondary action is required depends on the primary action:
      * <ol>

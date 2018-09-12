@@ -1,6 +1,7 @@
 package csse2002.block.world;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A sparse representation of tiles in an Array. 
@@ -45,7 +46,7 @@ public class SparseTileArray {
      * @return a list of tiles in breadth-first-search
      *          order.
      */
-    public java.util.List<Tile> getTiles() {
+    public List<Tile> getTiles() {
         return new ArrayList<>();
     }
 
