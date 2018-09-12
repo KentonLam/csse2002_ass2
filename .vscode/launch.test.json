@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "csse2002_ass2",
+                "projectName": "csse2002_ass2",
+                "workingDirectory": "c:\\Users\\Kenton\\Desktop\\UNSYNCED\\csse2002_ass2",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "csse2002_ass2",
+                "projectName": "csse2002_ass2",
+                "workingDirectory": "c:\\Users\\Kenton\\Desktop\\UNSYNCED\\csse2002_ass2",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}
