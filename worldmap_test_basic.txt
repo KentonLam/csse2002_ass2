@@ -1,7 +1,7 @@
 11
 7
 The Builder's Name
-wood,wood,soil,wood
+wood,wood,wood,soil,wood
 
 total:3
 0 stone,stone,stone

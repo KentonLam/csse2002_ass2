@@ -46,16 +46,52 @@ public class WorldMapTest {
     }
 
     @Test
-    public void testConstructorFromFileNormal() throws Exception {
+    public void testBasicMapInitialPosition() throws Exception {
         assertEquals("Initial position wrong.", new Position(11, 7),
                 basicMap.getStartPosition());
+    }
+
+    @Test
+    public void testBasicMapBuilderName() {
         assertEquals("Builder name wrong.", "The Builder's Name",
                 basicMap.getBuilder().getName());
+    }
 
+    @Test
+    public void testBasicMapBuilderInventory() {
         List<Block> inv = basicMap.getBuilder().getInventory();
-        assertEquals(Arrays.asList(WoodBlock.class, WoodBlock.class,
-                SoilBlock.class, WoodBlock.class),
-                getElementTypes(basicMap.getTiles().get(0).getBlocks()));
+        assertEquals("Wrong starting inventory.",
+                Arrays.asList(WoodBlock.class, WoodBlock.class,
+                        WoodBlock.class, SoilBlock.class, WoodBlock.class),
+                getElementTypes(inv));
+    }
+
+    @Test
+    public void testBasicMapTileBlocks() {
+        // Set up the expected block types in an iterable structure.
+        Class[] tile1Types = new Class[] {
+                StoneBlock.class, StoneBlock.class, StoneBlock.class
+        };
+        Class[] tile2Types = new Class[] {
+                StoneBlock.class, WoodBlock.class, SoilBlock.class
+        };
+        Class[] tile3Types = new Class[] {
+                StoneBlock.class, GrassBlock.class, SoilBlock.class,
+                WoodBlock.class, WoodBlock.class
+        };
+        Class[][] tileTypesArray = new Class[][] {
+                tile1Types, tile2Types, tile3Types
+        };
+
+        List<Tile> mapTiles = basicMap.getTiles();
+        assertEquals("Wrong number of tiles added.", 3, mapTiles.size());
+
+        for (int i = 0; i < 3; i++) {
+            assertEquals("Wrong blocks on tile.",
+                    Arrays.asList(tileTypesArray[i]),
+                    getElementTypes(mapTiles.get(i).getBlocks())
+            );
+        }
 
 
     }
