@@ -12,11 +12,17 @@ import java.util.Map;
 
 public class SparseTileArrayTest {
 
-    SparseTileArray emptyArray;
+    SparseTileArray sparseArray;
+    Tile tile1;
+    Tile tile2;
+    Tile tile3;
 
     @Before 
     public void setup() {
-        this.emptyArray = new SparseTileArray();
+        this.sparseArray = new SparseTileArray();
+        this.tile1 = new Tile();
+        this.tile2 = new Tile();
+        this.tile3 = new Tile();
     }
 
     private List<Tile> makeLinkedTile() {
@@ -50,7 +56,7 @@ public class SparseTileArrayTest {
             for (int j = 0; j < 10; j++) {
                 assertNull(
                     "Initial constructor should be null everywhere.",
-                    this.emptyArray.getTile(new Position(i, j))
+                    this.sparseArray.getTile(new Position(i, j))
                 );
             }
         }
@@ -59,10 +65,10 @@ public class SparseTileArrayTest {
     @Test
     public void testGetTile() throws BlockWorldException {
         Tile tile = new Tile();
-        this.emptyArray.addLinkedTiles(tile, 100, 50);
+        this.sparseArray.addLinkedTiles(tile, 100, 50);
         assertEquals("Get tile returned incorrect tile.",
                 tile,
-                this.emptyArray.getTile(new Position(100, 50))
+                this.sparseArray.getTile(new Position(100, 50))
         );
         
     }
@@ -71,7 +77,7 @@ public class SparseTileArrayTest {
     public void testAddLinkedTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
 
-        this.emptyArray.addLinkedTiles(tiles.get(0), 0, 0);
+        this.sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
         HashMap<Position, Tile> expectedMap = new HashMap<>();
         expectedMap.put(new Position(0, 0), tiles.get(0));
@@ -87,7 +93,7 @@ public class SparseTileArrayTest {
         for (Map.Entry<Position, Tile> entry : expectedMap.entrySet()) {
             assertEquals("Incorrect tile inserted at position.",
                     entry.getValue(),
-                    this.emptyArray.getTile(entry.getKey()));
+                    this.sparseArray.getTile(entry.getKey()));
         }
     }
 
@@ -95,7 +101,7 @@ public class SparseTileArrayTest {
     public void testGetTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
         // This executes the code under test.
-        this.emptyArray.addLinkedTiles(tiles.get(0), 0, 0);
+        this.sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
         // The following is just to generate the expected tile list.
         // This could probably be made more robust.
@@ -108,9 +114,59 @@ public class SparseTileArrayTest {
         }
         assertEquals("Get tiles should return in BFS order.",
                 expected,
-                this.emptyArray.getTiles()
+                this.sparseArray.getTiles()
         );
+    }
 
+
+    @Test(expected = WorldMapInconsistentException.class)
+    public void testAddTilesThrowsWithWrongReverseExit()
+            throws BlockWorldException {
+        // Layout: tile1 -> tile2.
+        // However, tile2's west exit is tile1 and should throw.
+        tile1.addExit("east", tile2);
+        tile2.addExit("west", tile3);
+
+        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+    }
+
+    @Test(expected = WorldMapInconsistentException.class)
+    public void testAddTilesGeometricallyWrongTransitive()
+            throws BlockWorldException {
+        tile1.addExit("east", tile2);
+        tile2.addExit("east", tile3);
+
+        tile1.addExit("north", tile3);
+        tile3.addExit("south", tile1);
+        // Layout: tile1 -> tile2 -> tile3.
+        // However, tile1 has a north exit to tile3, and tile3 has a south
+        // exit to tile1. This wouldn't violate the reverse exit requirement,
+        // but is still geometrically wrong as it implies tile3 is in two
+        // different positions.
+        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+    }
+
+    @Test(expected = WorldMapInconsistentException.class)
+    public void testAddTilesLinkingToSelfThrows() throws BlockWorldException {
+        tile1.addExit("north", tile1);
+        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+    }
+
+    @Test(expected = WorldMapInconsistentException.class)
+    public void testAddTilesOverlappingTileThrows() throws BlockWorldException {
+        Tile tile4 = new Tile();
+        Tile tile5 = new Tile();
+        tile1.addExit("east", tile2);
+        tile2.addExit("north", tile3);
+        tile3.addExit("west", tile4);
+        tile4.addExit("south", tile5);
+        // Layout:
+        // 4 <- 3
+        //      ^
+        // 1 -> 2
+        // However, 4 has a south exit to 5 and tile5 is obviously not tile1.
+        // Should throw.
+        this.sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
 }
