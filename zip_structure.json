@@ -15,7 +15,7 @@
         "clean": false
     },
     "test": {
-        "src_path": "test/main/java/csse2002/block/world/",
+        "src_path": "src/test/java/csse2002/block/world/",
         "dest_path": "test/csse2002/block/world/",
         "include": [
             "ActionTest.java",
