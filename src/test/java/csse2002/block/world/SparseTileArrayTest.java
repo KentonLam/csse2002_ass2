@@ -19,7 +19,7 @@ public class SparseTileArrayTest {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 assertNull(
-                    "Intial constructor should be null everywhere.",
+                    "Initial constructor should be null everywhere.",
                     this.emptyArray.getTile(new Position(i, j))
                 );
             }
