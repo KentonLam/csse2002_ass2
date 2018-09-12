@@ -132,4 +132,10 @@ public class WorldMapTest {
         assertEquals("Tile not empty.", 0,
                 emptyMap.getTile(new Position(11, 7)).getBlocks().size());
     }
+
+    @Test
+    public void testEmptyMapTileExits() {
+        assertEquals("Tile should not have exits.",
+                0, emptyMap.getTile(new Position(11, 7)).getExits().size());
+    }
 }
