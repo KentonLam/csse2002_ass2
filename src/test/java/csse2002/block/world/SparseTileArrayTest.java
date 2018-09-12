@@ -19,10 +19,10 @@ public class SparseTileArrayTest {
 
     @Before 
     public void setup() {
-        this.sparseArray = new SparseTileArray();
-        this.tile1 = new Tile();
-        this.tile2 = new Tile();
-        this.tile3 = new Tile();
+        sparseArray = new SparseTileArray();
+        tile1 = new Tile();
+        tile2 = new Tile();
+        tile3 = new Tile();
     }
 
     private List<Tile> makeLinkedTile() {
@@ -56,7 +56,7 @@ public class SparseTileArrayTest {
             for (int j = 0; j < 10; j++) {
                 assertNull(
                     "Initial constructor should be null everywhere.",
-                    this.sparseArray.getTile(new Position(i, j))
+                        sparseArray.getTile(new Position(i, j))
                 );
             }
         }
@@ -65,10 +65,10 @@ public class SparseTileArrayTest {
     @Test
     public void testGetTile() throws BlockWorldException {
         Tile tile = new Tile();
-        this.sparseArray.addLinkedTiles(tile, 100, 50);
+        sparseArray.addLinkedTiles(tile, 100, 50);
         assertEquals("Get tile returned incorrect tile.",
                 tile,
-                this.sparseArray.getTile(new Position(100, 50))
+                sparseArray.getTile(new Position(100, 50))
         );
         
     }
@@ -77,7 +77,7 @@ public class SparseTileArrayTest {
     public void testAddLinkedTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
 
-        this.sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
+        sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
         HashMap<Position, Tile> expectedMap = new HashMap<>();
         expectedMap.put(new Position(0, 0), tiles.get(0));
@@ -93,7 +93,7 @@ public class SparseTileArrayTest {
         for (Map.Entry<Position, Tile> entry : expectedMap.entrySet()) {
             assertEquals("Incorrect tile inserted at position.",
                     entry.getValue(),
-                    this.sparseArray.getTile(entry.getKey()));
+                    sparseArray.getTile(entry.getKey()));
         }
     }
 
@@ -101,7 +101,7 @@ public class SparseTileArrayTest {
     public void testGetTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
         // This executes the code under test.
-        this.sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
+        sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
         // The following is just to generate the expected tile list.
         // This could probably be made more robust.
@@ -114,7 +114,7 @@ public class SparseTileArrayTest {
         }
         assertEquals("Get tiles should return in BFS order.",
                 expected,
-                this.sparseArray.getTiles()
+                sparseArray.getTiles()
         );
     }
 
@@ -127,7 +127,7 @@ public class SparseTileArrayTest {
         tile1.addExit("east", tile2);
         tile2.addExit("west", tile3);
 
-        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+        sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
     @Test(expected = WorldMapInconsistentException.class)
@@ -143,13 +143,13 @@ public class SparseTileArrayTest {
         // exit to tile1. This wouldn't violate the reverse exit requirement,
         // but is still geometrically wrong as it implies tile3 is in two
         // different positions.
-        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+        sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
     @Test(expected = WorldMapInconsistentException.class)
     public void testAddTilesLinkingToSelfThrows() throws BlockWorldException {
         tile1.addExit("north", tile1);
-        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+        sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
     @Test(expected = WorldMapInconsistentException.class)
@@ -166,7 +166,7 @@ public class SparseTileArrayTest {
         // 1 -> 2
         // However, 4 has a south exit to 5 and tile5 is obviously not tile1.
         // Should throw.
-        this.sparseArray.addLinkedTiles(tile1, 0, 0);
+        sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
 }
