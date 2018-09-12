@@ -19,7 +19,32 @@ public class SparseTileArrayTest {
         this.emptyArray = new SparseTileArray();
     }
 
-    @Test 
+    private List<Tile> makeLinkedTile() {
+        List<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            tiles.add(new Tile());
+        }
+        try {
+            tiles.get(0).addExit("south", tiles.get(2));
+            tiles.get(2).addExit("west", tiles.get(1));
+            tiles.get(1).addExit("south", tiles.get(5));
+            tiles.get(5).addExit("east", tiles.get(7));
+            tiles.get(7).addExit("north", tiles.get(2));
+            tiles.get(2).addExit("south", tiles.get(7));
+            tiles.get(7).addExit("east", tiles.get(8));
+            tiles.get(8).addExit("north", tiles.get(3));
+            tiles.get(2).addExit("east", tiles.get(3));
+            tiles.get(3).addExit("east", tiles.get(4));
+            tiles.get(4).addExit("south", tiles.get(9));
+            tiles.get(9).addExit("west", tiles.get(8));
+            tiles.get(8).addExit("south", tiles.get(6));
+        } catch (NoExitException e) {
+            throw new AssertionError(e);
+        }
+        return tiles;
+    }
+
+    @Test
     public void testEmptyTileArrayShouldBeNullEverywhere() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -32,23 +57,19 @@ public class SparseTileArrayTest {
     }
 
     @Test
+    public void testGetTile() throws BlockWorldException {
+        Tile tile = new Tile();
+        this.emptyArray.addLinkedTiles(tile, 100, 50);
+        assertEquals("Get tile returned incorrect tile.",
+                tile,
+                this.emptyArray.getTile(new Position(100, 50))
+        );
+        
+    }
+
+    @Test
     public void testAddLinkedTilesNormal() throws BlockWorldException {
-        List<Tile> tiles = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            tiles.add(new Tile());
-        }
-        tiles.get(0).addExit("south", tiles.get(2));
-        tiles.get(2).addExit("west", tiles.get(1));
-        tiles.get(1).addExit("south", tiles.get(5));
-        tiles.get(5).addExit("east", tiles.get(7));
-        tiles.get(7).addExit("north", tiles.get(2));
-        tiles.get(2).addExit("south", tiles.get(7));
-        tiles.get(7).addExit("east", tiles.get(8));
-        tiles.get(8).addExit("north", tiles.get(3));
-        tiles.get(2).addExit("east", tiles.get(3));
-        tiles.get(3).addExit("east", tiles.get(4));
-        tiles.get(4).addExit("south", tiles.get(9));
-        tiles.get(9).addExit("west", tiles.get(8));
+        List<Tile> tiles = makeLinkedTile();
 
         this.emptyArray.addLinkedTiles(tiles.get(0), 0, 0);
 
@@ -68,6 +89,28 @@ public class SparseTileArrayTest {
                     entry.getValue(),
                     this.emptyArray.getTile(entry.getKey()));
         }
+    }
+
+    @Test
+    public void testGetTilesNormal() throws BlockWorldException {
+        List<Tile> tiles = makeLinkedTile();
+        // This executes the code under test.
+        this.emptyArray.addLinkedTiles(tiles.get(0), 0, 0);
+
+        // The following is just to generate the expected tile list.
+        // This could probably be made more robust.
+        int[] order = new int[] {
+                0, 2, 3, 7, 1, 4, 8, 5, 9, 6
+        };
+        List<Tile> expected = new ArrayList<>();
+        for (int i : order) {
+            expected.add(tiles.get(i));
+        }
+        assertEquals("Get tiles should return in BFS order.",
+                expected,
+                this.emptyArray.getTiles()
+        );
 
     }
+
 }
