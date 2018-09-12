@@ -1,6 +1,12 @@
 package csse2002.block.world;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 
 /**
@@ -230,6 +236,10 @@ public class SparseTileArray {
                 // However, there already exists a different tile in its
                 // position. This is geometrically inconsistent; return false
                 // so addLinkedTiles throws.
+
+                // This also handles the case where a reverse exit maps to a
+                // different tile. The earlier tile would already have been
+                // placed in the position, leading to this case.
                 return false;
             }
 
