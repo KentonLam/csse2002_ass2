@@ -51,7 +51,7 @@ public class SparseTileArray {
     public SparseTileArray() {
     }
 
-    private void clearInternalState() {
+    private void resetInternalState() {
         insertedTiles.clear();
         positionToTile.clear();
     }
@@ -137,16 +137,24 @@ public class SparseTileArray {
      */
     public void addLinkedTiles(Tile startingTile, int startingX, int startingY)
             throws WorldMapInconsistentException {
+        // We offload the actual computations to a helper function so we can
+        // cleanup then throw here in one place.
         boolean success = breadthFirstAddLinkedTiles(
                 startingTile, new Position(startingX, startingY));
         if (!success) {
+            resetInternalState();
             throw new WorldMapInconsistentException();
         }
-        // TODO: Implement addLinkedTiles.
-        // TODO: Use a mapping of tile to position for seen.
-        // TODO: Use a mapping of tile to position for queue, where position is new position for tile.
     }
 
+    /**
+     * Helper function to execute the breadth first recursion through
+     * startingTile's adjacent tiles.
+     * @param startingTile Tile to start from, cannot be null.
+     * @param startingPos Position to start at.
+     * @return true added successfully, false if there are inconsistencies
+     * with the exits' geometry.
+     */
     private boolean breadthFirstAddLinkedTiles(Tile startingTile,
                                                Position startingPos) {
         // Initialise queue with starting tile.
@@ -214,6 +222,7 @@ public class SparseTileArray {
         return true;
     }
 
+    /** Returns the direction opposite the given cardinal direction. */
     private String oppDir(String originalDirection) {
         switch (originalDirection) {
             case "north":
@@ -229,10 +238,12 @@ public class SparseTileArray {
                 "Unknown direction: "+originalDirection);
     }
 
+    /** Returns the given position shifted one unit in the given direction. */
     private Position shiftPos(String direction, Position position) {
         return addPos(position, directionShifts.get(direction));
     }
 
+    /** Returns the component-wise sum of the given position vectors. */
     private Position addPos(Position pos1, Position pos2) {
         return new Position(
                 pos1.getX()+pos2.getX(), pos1.getY()+pos2.getY());
