@@ -77,23 +77,11 @@ public class SparseTileArray {
         }
     }
 
-    /**
-     * Ordered hash map of direction names to their position shifts.
-     * Used when iterating through a tile's exits.
-     */
-    private static final LinkedHashMap<String, Position> directionShifts =
-            new LinkedHashMap<String, Position>() {{
-        put("north", new Position(0, -1));
-        put("east", new Position(1, 0));
-        put("south", new Position(0, 1));
-        put("west", new Position(-1, 0));
-    }};
-
     /** Set of inserted tiles, in BFS order relative to a starting tile. */
     private List<Tile> insertedTiles = new ArrayList<>();
 
     /** Mapping of position to tiles. */
-    private HashMap<Position, Tile> positionToTile = new HashMap<>();
+    private Map<Position, Tile> positionToTile = new HashMap<>();
 
     /**
      * Constructor for a SparseTileArray.
