@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class WorldMap {
 
+    private Builder builder;
+
+    private Position startPosition;
+
+    private final SparseTileArray sparseArray = new SparseTileArray();
+
     /**
      * Constructs a new block world map from a startingTile, position and
      * builder, such that getBuilder() == builder,
@@ -27,7 +33,23 @@ public class WorldMap {
     public WorldMap(Tile startingTile,
                     Position startPosition,
                     Builder builder)
-             throws WorldMapInconsistentException {}
+             throws WorldMapInconsistentException {
+        initialise(startingTile, startPosition, builder);
+    }
+
+    /**
+     * This serves the purpose of storing variables, because the filename-
+     * based constructor need to call this. This way, both constructors can
+     * call this method.
+     */
+    private void initialise(Tile startingTile, Position startPosition,
+                            Builder builder)
+            throws WorldMapInconsistentException {
+        sparseArray.addLinkedTiles(
+                startingTile, startPosition.getX(), startPosition.getY());
+        this.startPosition = startPosition;
+        this.builder = builder;
+    }
 
     /**
      * Construct a block world map from the given filename.
