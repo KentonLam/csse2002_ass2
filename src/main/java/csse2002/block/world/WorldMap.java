@@ -13,7 +13,7 @@ import java.util.List;
 public class WorldMap {
 
     /**
-     * Enum mapping block blockClass strings (used in the world map file format) to
+     * Enum mapping block type strings (used in the world map file format) to
      * their Java classes.
      */
     private enum BlockTypes {
