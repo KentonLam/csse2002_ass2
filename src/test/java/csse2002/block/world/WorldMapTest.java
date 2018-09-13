@@ -6,9 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class WorldMapTest {
     /**
@@ -102,8 +100,18 @@ public class WorldMapTest {
                     getElementTypes(mapTiles.get(i).getBlocks())
             );
         }
+    }
 
+    @Test
+    public void testBasicMapExits() {
+        Map<String, Tile> expected = new HashMap<>();
+        List<Tile> tiles = basicMap.getTiles();
+        expected.put("east", tiles.get(2));
+        expected.put("north", tiles.get(1));
 
+        assertEquals("Incorrect exits from starting tile.",
+                expected,
+                tiles.get(0).getExits());
     }
 
     @Test
