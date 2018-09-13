@@ -60,6 +60,13 @@ public class WorldMapTest {
     }
 
     @Test
+    public void testBasicMapFirstTile() {
+        assertEquals("First tile of getTiles() is not the starting tile.",
+                basicMap.getTiles().get(0),
+                basicMap.getTile(basicMap.getStartPosition()));
+    }
+
+    @Test
     public void testBasicMapBuilderName() {
         assertEquals("Builder name wrong.", "The Builder's Name",
                 basicMap.getBuilder().getName());
