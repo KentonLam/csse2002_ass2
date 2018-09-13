@@ -159,9 +159,9 @@ public class WorldMap {
      * @require filename != null
      * @ensure the loaded map is geometrically consistent
      */
-    public WorldMap(String filename)
-             throws WorldMapFormatException, WorldMapInconsistentException,
-                    FileNotFoundException {
+    public WorldMap(String filename) throws WorldMapFormatException,
+                                            WorldMapInconsistentException,
+                                            FileNotFoundException {
         try (FileReader file = new FileReader(filename)) {
             BufferedReader reader = new BufferedReader(file);
 
