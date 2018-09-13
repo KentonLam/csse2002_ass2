@@ -35,7 +35,10 @@ public class WorldMapTest {
         return classes;
     }
 
-    /** Tests the private helper getElementTypes. */
+    /**
+     * Tests the private helper getElementTypes.
+     * This is important, as we use it in many other tests.
+     * */
     @Test
     public void testGetElementTypes() {
         List<Block> blocks = new ArrayList<Block>() {{
