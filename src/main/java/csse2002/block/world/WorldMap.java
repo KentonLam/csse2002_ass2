@@ -29,7 +29,7 @@ public class WorldMap {
         }
 
         /**
-         * Instantiates a new class of the block blockClass.
+         * Instantiates a new class of the block type.
          * @return New block object.
          */
         public Block newInstance() {
