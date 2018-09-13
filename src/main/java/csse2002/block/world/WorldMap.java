@@ -176,10 +176,15 @@ public class WorldMap {
     }
 
     private void parseBuilderSection(BufferedReader reader)
-            throws IOException {
+            throws IOException, WorldMapFormatException {
         // Read the starting position, first 2 lines.
-        int startX = Integer.parseInt(reader.readLine());
-        int startY = Integer.parseInt(reader.readLine());
+        try {
+            int startX = Integer.parseInt(reader.readLine());
+            int startY = Integer.parseInt(reader.readLine());
+        } catch (NumberFormatException e) {
+            // Invalid integer format, throw.
+            throw new WorldMapFormatException();
+        }
         startPosition = new Position(startX, startY);
 
         // The next 2 lines are the builder's name and inventory.
@@ -189,7 +194,14 @@ public class WorldMap {
         // Convert the block strings to class instances.
         builderInventory = new ArrayList<>();
         for (String blockType : inventoryStrings) {
-            builderInventory.add(BlockTypes.valueOf(blockType).newInstance());
+            Block newBlock;
+            try {
+                newBlock = BlockTypes.valueOf(blockType).newInstance();
+            } catch (IllegalArgumentException e) {
+                // The block type string was not a valid block type, throw.
+                throw new WorldMapFormatException();
+            }
+            builderInventory.add(newBlock);
         }
     }
 
