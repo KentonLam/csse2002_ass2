@@ -2,6 +2,7 @@ package csse2002.block.world;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +135,7 @@ public class SparseTileArray {
     public List<Tile> getTiles() {
         // Because addLinkedTiles is implemented as BFS, we simply cache
         // the result of that and return it here.
-        return insertedTiles;
+        return Collections.unmodifiableList(insertedTiles);
     }
 
     /**
