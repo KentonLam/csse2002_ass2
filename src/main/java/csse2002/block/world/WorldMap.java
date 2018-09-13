@@ -1,5 +1,9 @@
 package csse2002.block.world;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,11 +12,48 @@ import java.util.List;
  */
 public class WorldMap {
 
+    /**
+     * Enum mapping block blockClass strings (used in the world map file format) to
+     * their Java classes.
+     */
+    private enum BlockTypes {
+        wood(WoodBlock.class),
+        grass(GrassBlock.class),
+        soil(SoilBlock.class),
+        stone(StoneBlock.class);
+
+        private Class<? extends Block> blockClass;
+
+        BlockTypes(Class<? extends Block> blockClass) {
+            this.blockClass = blockClass;
+        }
+
+        /**
+         * Instantiates a new class of the block blockClass.
+         * @return New block object.
+         */
+        public Block newInstance() {
+            try {
+                return blockClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                // The enum values we define should never result in these
+                // exceptions.
+                throw new AssertionError(
+                        "Exception while instantiating block class.", e);
+            }
+        }
+    }
+
     private Builder builder;
 
     private Position startPosition;
 
     private final SparseTileArray sparseArray = new SparseTileArray();
+
+    // Used to temporarily store this information until we construct a
+    // tile for the builder.
+    private String builderName;
+    private List<Block> builderInventory;
 
     /**
      * Constructs a new block world map from a startingTile, position and
@@ -34,17 +75,6 @@ public class WorldMap {
                     Position startPosition,
                     Builder builder)
              throws WorldMapInconsistentException {
-        initialise(startingTile, startPosition, builder);
-    }
-
-    /**
-     * This serves the purpose of storing variables, because the filename-
-     * based constructor need to call this. This way, both constructors can
-     * call this method.
-     */
-    private void initialise(Tile startingTile, Position startPosition,
-                            Builder builder)
-            throws WorldMapInconsistentException {
         sparseArray.addLinkedTiles(
                 startingTile, startPosition.getX(), startPosition.getY());
         this.startPosition = startPosition;
@@ -129,9 +159,39 @@ public class WorldMap {
      * @ensure the loaded map is geometrically consistent
      */
     public WorldMap(String filename)
-             throws WorldMapFormatException,
-                    WorldMapInconsistentException,
-                    java.io.FileNotFoundException {}
+             throws WorldMapFormatException, WorldMapInconsistentException,
+                    java.io.FileNotFoundException {
+        try (FileReader file = new FileReader(filename)) {
+            BufferedReader reader = new BufferedReader(file);
+
+            int lineNumber = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+
+
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private void parseBuilderSection(BufferedReader reader)
+            throws IOException {
+        // Read the starting position, first 2 lines.
+        int startX = Integer.parseInt(reader.readLine());
+        int startY = Integer.parseInt(reader.readLine());
+        startPosition = new Position(startX, startY);
+
+        // The next 2 lines are the builder's name and inventory.
+        builderName = reader.readLine();
+        String[] inventoryStrings = reader.readLine().split(",");
+
+        // Convert the block strings to class instances.
+        builderInventory = new ArrayList<>();
+        for (String blockType : inventoryStrings) {
+            builderInventory.add(BlockTypes.valueOf(blockType).newInstance());
+        }
+    }
 
     /**
      * Gets the builder associated with this block world.
@@ -167,7 +227,7 @@ public class WorldMap {
      * Hint: call SparseTileArray.getTiles().
      * @return a list of ordered tiles
      */
-    public java.util.List<Tile> getTiles() {
+    public List<Tile> getTiles() {
         return new ArrayList<Tile>();
     }
 
