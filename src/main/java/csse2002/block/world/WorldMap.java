@@ -6,7 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class to store a world map
@@ -165,12 +169,9 @@ public class WorldMap {
         try (FileReader file = new FileReader(filename)) {
             BufferedReader reader = new BufferedReader(file);
 
-            int lineNumber = 0;
-            String line;
-            while ((line = reader.readLine()) != null) {
+            parseBuilderSection(reader);
 
 
-            }
         } catch (FileNotFoundException e) {
             // Because FileNotFoundExc is a subclass of IOExc, we need to
             // manually propagate it here.
@@ -209,6 +210,82 @@ public class WorldMap {
                 throw new WorldMapFormatException();
             }
             builderInventory.add(newBlock);
+        }
+    }
+
+    /**
+     * Parses a string of the format "label1:N,label2:M,label3:P" into a
+     * map.
+     *
+     * <p>Format (if the string does not match, an exception will be thrown):
+     * <ul>
+     *     <li>Comma-delimited fields (no spaces)</li>
+     *     <li>Lowercase field names</li>
+     *     <li>No repeated field names</li>
+     *     <li>Number is a non-negative integer</li>
+     * </ul>
+     * </p>
+     *
+     * @param string String to parse.
+     * @param allowMultiple If false, only one "label:N" will be permitted.
+     * @return Map of label names to their number.
+     * @throws WorldMapFormatException If multiple==false and there are
+     * multiple fields, or the format is invalid (see above).
+     */
+    private Map<String, Integer> parseColonStrings(
+            String string, boolean allowMultiple)
+            throws WorldMapFormatException {
+        Pattern fieldRegex = Pattern.compile("([a-z]+):(\\d+)");
+
+        String[] fields = string.split(",");
+        if (!allowMultiple && fields.length > 1) {
+            throw new WorldMapFormatException();
+        }
+
+        Map<String, Integer> outputMap = new HashMap<>();
+        for (String field : fields) {
+            Matcher matcher = fieldRegex.matcher(field);
+            if (matcher.matches()) {
+                // If it matches, we know the integer will be valid.
+                outputMap.put(matcher.group(1),
+                        Integer.parseInt(matcher.group(2)));
+            } else {
+                throw new WorldMapFormatException();
+            }
+        }
+
+        return outputMap;
+    }
+
+    private void parseTilesSection(BufferedReader reader)
+            throws IOException, WorldMapFormatException {
+        String totalLine = reader.readLine();
+        Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
+        if (!totalLineMap.containsKey("total")) {
+            // Either it has no or the wrong string label, throw.
+            throw new WorldMapFormatException();
+        }
+
+        int numLines = totalLineMap.get("total");
+
+        int currentIndex = 0;
+        String line;
+        while (!(line = reader.readLine()).equals("")) {
+            String[] splitLine = line.split(" ");
+            if (splitLine.length != 2) {
+                throw new WorldMapFormatException();
+            }
+
+            int tileNum;
+            try {
+                tileNum = Integer.parseInt(splitLine[0]);
+            } catch (NumberFormatException e) {
+                throw new WorldMapFormatException();
+            }
+
+
+
+            currentIndex++;
         }
     }
 
