@@ -178,9 +178,11 @@ public class WorldMap {
     private void parseBuilderSection(BufferedReader reader)
             throws IOException, WorldMapFormatException {
         // Read the starting position, first 2 lines.
+        int startX;
+        int startY;
         try {
-            int startX = Integer.parseInt(reader.readLine());
-            int startY = Integer.parseInt(reader.readLine());
+            startX = Integer.parseInt(reader.readLine());
+            startY = Integer.parseInt(reader.readLine());
         } catch (NumberFormatException e) {
             // Invalid integer format, throw.
             throw new WorldMapFormatException();
