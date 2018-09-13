@@ -121,6 +121,13 @@ public class WorldMapTest {
     }
 
     @Test
+    public void testEmptyMapBuilderStartingTile() {
+        assertEquals("Builder starting tile wrong.",
+                emptyMap.getBuilder().getCurrentTile(),
+                emptyMap.getTiles().get(0));
+    }
+
+    @Test
     public void testEmptyMapInitialPosition() {
         assertEquals("Initial position wrong.",
                 new Position(11, 7), emptyMap.getStartPosition());
