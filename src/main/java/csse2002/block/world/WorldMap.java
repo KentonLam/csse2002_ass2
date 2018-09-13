@@ -1,6 +1,7 @@
 package csse2002.block.world;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -154,13 +155,13 @@ public class WorldMap {
      * @throws WorldMapFormatException if the file is incorrectly formatted
      * @throws WorldMapInconsistentException if the file is correctly
      *          formatted, but has inconsistencies (such as overlapping tiles)
-     * @throws java.io.FileNotFoundException if the file does not exist
+     * @throws FileNotFoundException if the file does not exist
      * @require filename != null
      * @ensure the loaded map is geometrically consistent
      */
     public WorldMap(String filename)
              throws WorldMapFormatException, WorldMapInconsistentException,
-                    java.io.FileNotFoundException {
+                    FileNotFoundException {
         try (FileReader file = new FileReader(filename)) {
             BufferedReader reader = new BufferedReader(file);
 
@@ -170,6 +171,10 @@ public class WorldMap {
 
 
             }
+        } catch (FileNotFoundException e) {
+            // Because FileNotFoundExc is a subclass of IOExc, we need to
+            // manually propagate it here.
+            throw e;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
