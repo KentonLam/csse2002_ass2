@@ -1,3 +1,5 @@
+package csse2002.block.world;
+
 /* This file tests to see if an Assignment submission contains the methods
    specified in the Javadoc specification. It checks for presence of classes and
    presence of methods with correct names, arguments, access and thrown
