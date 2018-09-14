@@ -338,7 +338,7 @@ public class WorldMap {
     private Map<String, Integer> parseColonStrings(
             String string, boolean allowMultiple)
             throws WorldMapFormatException {
-        Pattern fieldRegex = Pattern.compile("([a-z]+):(\\d+)");
+        Pattern fieldRegex = Pattern.compile("^([a-z]+):(\\d+)$");
 
         String[] fields = string.split(",");
         if (!allowMultiple && fields.length > 1) {
