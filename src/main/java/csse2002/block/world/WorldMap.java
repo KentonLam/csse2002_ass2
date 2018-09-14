@@ -353,7 +353,7 @@ public class WorldMap {
      * @throws WorldMapFormatException If multiple==false and there are
      * multiple fields, or the format is invalid (see above).
      */
-    private Map<String, Integer> parseColonStrings(
+    private static Map<String, Integer> parseColonStrings(
             String string, boolean allowMultiple)
             throws WorldMapFormatException {
         Pattern fieldRegex = Pattern.compile("^([a-z]+):(\\d+)$");
@@ -416,7 +416,8 @@ public class WorldMap {
      * @throws IOException
      * @throws WorldMapFormatException
      */
-    private List<Tile> parseTilesSection(BufferedReader reader, Tile startingTile)
+    private static List<Tile> parseTilesSection(BufferedReader reader,
+                                                Tile startingTile)
             throws IOException, WorldMapFormatException {
         String totalLine = reader.readLine();
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
