@@ -405,6 +405,7 @@ public class WorldMap {
      * starting tile.
      * @param reader
      * @param startingTile The starting tile with no blocks on it.
+     * @return List of tiles, list index corresponds to the ID as from the file.
      * @throws IOException
      * @throws WorldMapFormatException
      */
