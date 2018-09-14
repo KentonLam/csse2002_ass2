@@ -88,7 +88,7 @@ public class WorldMap {
      * @param <L> Left type.
      * @param <R> Right type.
      */
-    private class Pair<L, R> {
+    private static class Pair<L, R> {
         public final L left;
         public final R right;
 
@@ -109,10 +109,6 @@ public class WorldMap {
 
     private final SparseTileArray sparseArray = new SparseTileArray();
 
-    // Used to temporarily store this information until we construct a
-    // tile for the builder.
-    private String builderName;
-    private List<Block> builderInventory;
 
     /**
      * Constructs a new block world map from a startingTile, position and
@@ -249,7 +245,7 @@ public class WorldMap {
         parseBuilderSection(reader);
     }
 
-    private void parseBuilderSection(BufferedReader reader)
+    private static Pair<Position, Builder> parseBuilderSection(BufferedReader reader)
             throws IOException, WorldMapFormatException {
         // Read the starting position, first 2 lines.
         int startX;
@@ -261,14 +257,28 @@ public class WorldMap {
             // Invalid integer format, throw.
             throw new WorldMapFormatException();
         }
-        startPosition = new Position(startX, startY);
+        // Shadows instance field with same name.
+        Position startPosition = new Position(startX, startY);
 
         // The next 2 lines are the builder's name and inventory.
-        builderName = reader.readLine();
+        String builderName = reader.readLine();
         String[] inventoryStrings = reader.readLine().split(",");
 
         // Convert the block strings to class instances.
-        builderInventory = BlockTypes.makeBlockList(inventoryStrings);
+        List<Block> builderInventory = BlockTypes.makeBlockList(inventoryStrings);
+
+        // Shadows instance's builder field.
+        Builder builder;
+        try {
+            builder = new Builder(builderName,
+                    new Tile(new ArrayList<>()), builderInventory);
+        } catch (TooHighException e) {
+            throw new AssertionError("No blocks but too high was thrown.", e);
+        } catch (InvalidBlockException e) {
+            // An inventory block is not carryable.
+            throw new WorldMapFormatException();
+        }
+        return new Pair<>(startPosition, builder);
     }
 
     /**
