@@ -84,6 +84,26 @@ public class WorldMap {
         }
     }
 
+    /**
+     * Class representing a pair of related objects.
+     * @param <L> Left type.
+     * @param <R> Right type.
+     */
+    private class Pair<L, R> {
+        public final L left;
+        public final R right;
+
+        /**
+         * Constructs a new Pair with the given left and right values.
+         * @param left Left parameter.
+         * @param right Right parameter.
+         */
+        public Pair(L left, R right) {
+            this.left = left;
+            this.right = right;
+        }
+    }
+
     private Builder builder;
 
     private Position startPosition;
