@@ -280,6 +280,17 @@ public class WorldMap {
         parseBuilderSection(reader);
     }
 
+    /**
+     * Parses the first section, the builder's properties and starting
+     * position.
+     *
+     * IMPORTANT: An empty new tile is instantiated here for the builder's
+     * starting tile.
+     * @param reader
+     * @return Pair of starting position and builder.
+     * @throws IOException
+     * @throws WorldMapFormatException
+     */
     private static Pair<Position, Builder> parseBuilderSection(BufferedReader reader)
             throws IOException, WorldMapFormatException {
         // Read the starting position, first 2 lines.
@@ -377,7 +388,7 @@ public class WorldMap {
         // Numeric part.
         int num = safeParseInt(split[0]);
 
-        // If there is no string part, use an empty string to avoid NPEs.
+        // If there is no string part, use an empty string to avoid nulls.
         String rest;
         if (split.length < 2) {
             rest = "";
@@ -388,7 +399,16 @@ public class WorldMap {
         return new Pair<>(num, rest);
     }
 
-    private void parseTilesSection(BufferedReader reader)
+    /**
+     * Parses the tile section of the given reader. startingTile must be given
+     * and must have no blocks. It is assumed that this tile is the builder's
+     * starting tile.
+     * @param reader
+     * @param startingTile The starting tile with no blocks on it.
+     * @throws IOException
+     * @throws WorldMapFormatException
+     */
+    private List<Block> parseTilesSection(BufferedReader reader, Tile startingTile)
             throws IOException, WorldMapFormatException {
         String totalLine = reader.readLine();
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
@@ -399,16 +419,59 @@ public class WorldMap {
 
         int numLines = totalLineMap.get("total");
 
-        int currentIndex = 0;
-        String line;
-        while (!(line = reader.readLine()).equals("")) {
-            String[] splitLine = line.split(" ");
-            if (splitLine.length != 2) {
+        // Mapping of tile ID to that tile's blocks.
+        // We need a mapping because we cannot guarantee the ordering of tiles
+        // is 0 to numTiles-1.
+        Map<Integer, List<Block>> blocksForTiles = new HashMap<>();
+
+        // Parse exactly the next 'numLines' rows.
+        for (int i = 0; i < numLines; i++) {
+            Pair<Integer, String> linePair =
+                    parseNumberedRow(safeReadLine(reader));
+            int num = linePair.left;
+            String blocksString = linePair.right;
+
+            // If num is out of range or already inserted, throw.
+            if (num < 0 || num >= numLines || blocksForTiles.containsKey(num)) {
                 throw new WorldMapFormatException();
             }
 
+            // Add the list of block instances to the mapping.
+            blocksForTiles.put(num,
+                    BlockTypes.makeBlockList(blocksString.split(",")));
+        }
+        // Because the for loop iterates exactly 'numLines' times, if we
+        // reach this point, we can be sure all tiles have one line each.
+
+        // Mapping of tile IDs to the actual tile objects.
+        List<Tile> tiles = new ArrayList<>();
+        tiles.add(startingTile);
+
+        // For the first tile, we already have a tile object; add
+        // the blocks.
+        for (Block block : blocksForTiles.get(0)) {
+            try {
+                startingTile.placeBlock(block);
+            } catch (InvalidBlockException e) {
+                throw new AssertionError("Inserting null block.", e);
+            } catch (TooHighException e) {
+                // Ground block too high.
+                throw new WorldMapFormatException();
+            }
         }
 
+        // Skip first tile; already handled above. Add the other tiles' blocks.
+        for (int i = 1; i < numLines; i++) {
+            Tile newTile;
+            try {
+                // Initialise with the correct blocks.
+                newTile = new Tile(blocksForTiles.get(i));
+            } catch (TooHighException e) {
+                throw new WorldMapFormatException();
+            }
+            tiles.add(newTile);
+        }
+        return tiles;
     }
 
     /**
