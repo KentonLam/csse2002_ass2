@@ -231,6 +231,42 @@ public class WorldMap {
     }
 
     /**
+     * Parses the integer and replaces NumberFormatException with WMFE.
+     * @param numberString string containing an integer.
+     * @return integer.
+     * @throws WorldMapFormatException if string is null or an invalid integer.
+     */
+    private static int safeParseInt(String numberString)
+            throws WorldMapFormatException {
+        try {
+            return Integer.parseInt(numberString);
+        } catch (NumberFormatException e) {
+            throw new WorldMapFormatException();
+        }
+    }
+
+    /**
+     * Wrapper around readLine() which throws WMFE on EOF or IOException.
+     * @param reader
+     * @return
+     * @throws WorldMapFormatException
+     */
+    private static String safeReadLine(BufferedReader reader)
+            throws WorldMapFormatException {
+        String line;
+        try {
+            line = reader.readLine();
+        } catch (IOException e) {
+            throw new WorldMapFormatException();
+        }
+        if (line == null) {
+            throw new WorldMapFormatException();
+        } else {
+            return line;
+        }
+    }
+
+    /**
      * Loads data from the given buffered reader into the world map instance.
      * @param reader Reader to load from.
      * @throws WorldMapFormatException If the file format is wrong.
@@ -354,10 +390,6 @@ public class WorldMap {
                 throw new WorldMapFormatException();
             }
 
-
-
-            currentIndex++;
-        }
     }
 
     /**
