@@ -282,7 +282,9 @@ public class WorldMap {
     private void loadWorldMap(BufferedReader reader)
             throws WorldMapFormatException, WorldMapInconsistentException,
                    IOException {
-        parseBuilderSection(reader);
+        Pair<Position, Builder> builderPair = parseBuilderSection(reader);
+        builder = builderPair.right;
+        startPosition = builderPair.left;
     }
 
     /**
@@ -485,7 +487,7 @@ public class WorldMap {
      * @return the builder object
      */
     public Builder getBuilder() {
-        return new Builder("DUMMY", new Tile());
+        return builder;
     }
 
     /**
@@ -493,7 +495,7 @@ public class WorldMap {
      * @return the starting position.
      */
     public Position getStartPosition() {
-        return new Position(0, 0);
+        return startPosition;
     }
 
     /**
