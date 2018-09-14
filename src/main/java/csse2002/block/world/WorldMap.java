@@ -212,7 +212,7 @@ public class WorldMap {
             // manually propagate it here.
             throw e;
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new WorldMapFormatException();
         }
     }
 
