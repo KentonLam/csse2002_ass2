@@ -270,7 +270,8 @@ public class WorldMap {
         Map<String, Integer> outputMap = new HashMap<>();
         for (String field : fields) {
             Matcher matcher = fieldRegex.matcher(field);
-            if (matcher.matches()) {
+            // Throw on repeated names too.
+            if (matcher.matches() && !outputMap.containsKey(matcher.group(1))) {
                 // If it matches, we know the integer will be valid.
                 outputMap.put(matcher.group(1),
                         Integer.parseInt(matcher.group(2)));
