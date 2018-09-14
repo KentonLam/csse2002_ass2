@@ -408,7 +408,7 @@ public class WorldMap {
      * @throws IOException
      * @throws WorldMapFormatException
      */
-    private List<Block> parseTilesSection(BufferedReader reader, Tile startingTile)
+    private List<Tile> parseTilesSection(BufferedReader reader, Tile startingTile)
             throws IOException, WorldMapFormatException {
         String totalLine = reader.readLine();
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
