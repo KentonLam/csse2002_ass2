@@ -299,23 +299,17 @@ public class WorldMap {
      * @throws WorldMapFormatException
      */
     private static Pair<Position, Builder> parseBuilderSection(BufferedReader reader)
-            throws IOException, WorldMapFormatException {
-        // Read the starting position, first 2 lines.
-        int startX;
-        int startY;
-        try {
-            startX = Integer.parseInt(reader.readLine());
-            startY = Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException e) {
-            // Invalid integer format, throw.
-            throw new WorldMapFormatException();
-        }
+            throws WorldMapFormatException {
+        // Read the starting position, first 2 lines. The safe* methods will
+        // throw for us.
+        int startX = safeParseInt(safeReadLine(reader));
+        int startY = safeParseInt(safeReadLine(reader));
         // Shadows instance field with same name.
         Position startPosition = new Position(startX, startY);
 
         // The next 2 lines are the builder's name and inventory.
-        String builderName = reader.readLine();
-        String[] inventoryStrings = reader.readLine().split(",");
+        String builderName = safeReadLine(reader);
+        String[] inventoryStrings = safeReadLine(reader).split(",");
 
         // Convert the block strings to class instances.
         List<Block> builderInventory = BlockTypes.makeBlockList(inventoryStrings);
@@ -418,8 +412,8 @@ public class WorldMap {
      */
     private static List<Tile> parseTilesSection(BufferedReader reader,
                                                 Tile startingTile)
-            throws IOException, WorldMapFormatException {
-        String totalLine = reader.readLine();
+            throws WorldMapFormatException {
+        String totalLine = safeReadLine(reader);
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
         if (!totalLineMap.containsKey("total")) {
             // Either it has no or the wrong string label, throw.
@@ -481,6 +475,12 @@ public class WorldMap {
             tiles.add(newTile);
         }
         return tiles;
+    }
+
+    private static void parseExitsSection(BufferedReader reader,
+                                          List<Tile> tiles)
+            throws WorldMapFormatException {
+
     }
 
     /**
