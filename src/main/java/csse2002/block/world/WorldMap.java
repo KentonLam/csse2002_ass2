@@ -275,8 +275,7 @@ public class WorldMap {
      * @throws IOException If an I/O error occurs.
      */
     private void loadWorldMap(BufferedReader reader)
-            throws WorldMapFormatException,
-                   WorldMapInconsistentException,
+            throws WorldMapFormatException, WorldMapInconsistentException,
                    IOException {
         parseBuilderSection(reader);
     }
