@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -223,10 +222,9 @@ public class WorldMap {
                                             FileNotFoundException {
         try (FileReader file = new FileReader(filename)) {
             BufferedReader reader = new BufferedReader(file);
-
-            parseBuilderSection(reader);
-
-
+            // Offload to helper function so we don't have a massive
+            // constructor.
+            loadWorldMap(reader);
         } catch (FileNotFoundException e) {
             // Because FileNotFoundExc is a subclass of IOExc, we need to
             // manually propagate it here.
@@ -234,6 +232,21 @@ public class WorldMap {
         } catch (IOException e) {
             throw new WorldMapFormatException();
         }
+    }
+
+    /**
+     * Loads data from the given buffered reader into the world map instance.
+     * @param reader Reader to load from.
+     * @throws WorldMapFormatException If the file format is wrong.
+     * @throws WorldMapInconsistentException If the tile and exits are
+     * geometrically inconsistent.
+     * @throws IOException If an I/O error occurs.
+     */
+    private void loadWorldMap(BufferedReader reader)
+            throws WorldMapFormatException,
+                   WorldMapInconsistentException,
+                   IOException {
+        parseBuilderSection(reader);
     }
 
     private void parseBuilderSection(BufferedReader reader)
@@ -302,6 +315,8 @@ public class WorldMap {
 
         return outputMap;
     }
+
+    private String parseNumberedRow
 
     private void parseTilesSection(BufferedReader reader)
             throws IOException, WorldMapFormatException {
