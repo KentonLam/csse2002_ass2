@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class WorldMap {
          * @throws WorldMapFormatException If there is no matching block type
          * for some input string.
          */
-        public List<Block> makeBlockList(Iterable<String> blockTypes)
+        public static List<Block> makeBlockList(Iterable<String> blockTypes)
                 throws WorldMapFormatException {
             List<Block> blocks = new ArrayList<>();
             for (String blockType : blockTypes) {
@@ -67,6 +68,19 @@ public class WorldMap {
                 }
             }
             return blocks;
+        }
+
+        /**
+         * Accepts a list of block types in an array and returns a list of
+         * instances of those blocks.
+         * @param blockTypesArray Block types as array list.
+         * @return List of block instances.
+         * @throws WorldMapFormatException If there is no matching block type
+         * for an input string.
+         */
+        public static List<Block> makeBlockList(String[] blockTypesArray)
+                throws WorldMapFormatException {
+            return makeBlockList(Arrays.asList(blockTypesArray));
         }
     }
 
