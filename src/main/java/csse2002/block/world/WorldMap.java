@@ -47,6 +47,27 @@ public class WorldMap {
                         "Exception while instantiating block class.", e);
             }
         }
+
+        /**
+         * Accepts a list of block types as strings and returns a list of
+         * block instances given by the input strings.
+         * @param blockTypes Iterable of block type strings.
+         * @return List of block instances.
+         * @throws WorldMapFormatException If there is no matching block type
+         * for some input string.
+         */
+        public List<Block> makeBlockList(Iterable<String> blockTypes)
+                throws WorldMapFormatException {
+            List<Block> blocks = new ArrayList<>();
+            for (String blockType : blockTypes) {
+                try {
+                    blocks.add(BlockTypes.valueOf(blockType).newInstance());
+                } catch (IllegalArgumentException e) {
+                    throw new WorldMapFormatException();
+                }
+            }
+            return blocks;
+        }
     }
 
     private Builder builder;
