@@ -235,17 +235,7 @@ public class WorldMap {
         String[] inventoryStrings = reader.readLine().split(",");
 
         // Convert the block strings to class instances.
-        builderInventory = new ArrayList<>();
-        for (String blockType : inventoryStrings) {
-            Block newBlock;
-            try {
-                newBlock = BlockTypes.valueOf(blockType).newInstance();
-            } catch (IllegalArgumentException e) {
-                // The block type string was not a valid block type, throw.
-                throw new WorldMapFormatException();
-            }
-            builderInventory.add(newBlock);
-        }
+        builderInventory = BlockTypes.makeBlockList(inventoryStrings);
     }
 
     /**
