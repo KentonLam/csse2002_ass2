@@ -56,9 +56,14 @@ public class WorldMap {
          * @throws WorldMapFormatException If there is no matching block type
          * for some input string.
          */
-        public static List<Block> makeBlockList(Iterable<String> blockTypes)
+        public static List<Block> makeBlockList(List<String> blockTypes)
                 throws WorldMapFormatException {
             List<Block> blocks = new ArrayList<>();
+            // If there is only one string and it is empty, it came from an
+            // empty line of the file. Return an empty array.
+            if (blockTypes.size() == 1 && blockTypes.get(0).equals("")) {
+                return blocks;
+            }
             for (String blockType : blockTypes) {
                 try {
                     blocks.add(BlockTypes.valueOf(blockType).newInstance());
