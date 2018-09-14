@@ -352,7 +352,7 @@ public class WorldMap {
             if (matcher.matches() && !outputMap.containsKey(matcher.group(1))) {
                 // If it matches, we know the integer will be valid.
                 outputMap.put(matcher.group(1),
-                        Integer.parseInt(matcher.group(2)));
+                        safeParseInt(matcher.group(2)));
             } else {
                 throw new WorldMapFormatException();
             }
