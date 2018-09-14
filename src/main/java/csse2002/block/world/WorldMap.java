@@ -361,7 +361,32 @@ public class WorldMap {
         return outputMap;
     }
 
-    private String parseNumberedRow
+    /**
+     * Parses a line of the form "N &lt;rest&gt;", ensuring N is an integer.
+     * If "rest" is empty, the space can be omitted.
+     *
+     * @param line String to parse.
+     * @return Pair of the integer and the rest of the string.
+     */
+    private static Pair<Integer, String> parseNumberedRow(String line)
+            throws WorldMapFormatException {
+        String[] split = line.split(" ");
+        if (split.length > 2) {
+            throw new WorldMapFormatException();
+        }
+        // Numeric part.
+        int num = safeParseInt(split[0]);
+
+        // If there is no string part, use an empty string to avoid NPEs.
+        String rest;
+        if (split.length < 2) {
+            rest = "";
+        } else {
+            rest = split[1];
+        }
+
+        return new Pair<>(num, rest);
+    }
 
     private void parseTilesSection(BufferedReader reader)
             throws IOException, WorldMapFormatException {
@@ -382,12 +407,7 @@ public class WorldMap {
                 throw new WorldMapFormatException();
             }
 
-            int tileNum;
-            try {
-                tileNum = Integer.parseInt(splitLine[0]);
-            } catch (NumberFormatException e) {
-                throw new WorldMapFormatException();
-            }
+        }
 
     }
 
