@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 
 import java.io.BufferedReader;
 import java.io.IOException;
