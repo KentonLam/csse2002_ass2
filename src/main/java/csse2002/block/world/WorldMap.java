@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -625,10 +626,10 @@ public class WorldMap {
     /**
      * Gets a list of tiles in a breadth-first-search order from the starting
      * tile.
-     * @return a list of ordered tiles.
+     * @return an unmodifiable list of ordered tiles.
      */
     public List<Tile> getTiles() {
-        return sparseArray.getTiles();
+        return Collections.unmodifiableList(sparseArray.getTiles());
     }
 
     /**
