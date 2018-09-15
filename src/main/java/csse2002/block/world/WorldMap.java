@@ -106,27 +106,25 @@ public class WorldMap {
         }
     }
 
+    /** The world's builder. */
     private Builder builder;
 
+    /** Starting position. */
     private Position startPosition;
 
+    /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
-
 
     /**
      * Constructs a new block world map from a startingTile, position and
-     * builder, such that getBuilder() == builder,
-     * getStartPosition() == startPosition, and getTiles() returns a list
-     * of tiles that are linked to startingTile. 
+     * builder.
      * 
-     * Hint: create a SparseTileArray as a member, and use the
-     * addLinkedTiles to populate it.
-     * @param startingTile the tile which the builder starts on
-     * @param startPosition the position of the starting tile
-     * @param builder the builder who will traverse the block world
+     * @param startingTile the tile which the builder starts on.
+     * @param startPosition the position of the starting tile.
+     * @param builder the builder who will traverse the block world.
      * @throws WorldMapInconsistentException if there are inconsistencies
      *          in the positions of tiles (such as two tiles at a single
-     *          position)
+     *          position).
      * @require startingTile != null, startPosition != null, builder != null
      */
     public WorldMap(Tile startingTile,
@@ -141,80 +139,55 @@ public class WorldMap {
 
     /**
      * Construct a block world map from the given filename.
-     * 
-     * The block world map format is as follows:
-     * <pre>
-     * &lt;startingX&gt;
-     * &lt;startingY&gt;
-     * &lt;builder's name&gt;
-     * &lt;inventory1&gt;,&lt;inventory2&gt;, ... ,&lt;inventoryN&gt;
-     * 
-     * total:&lt;number of tiles&gt;
-     * &lt;tile0 id&gt; &lt;block1&gt;,&lt;block2&gt;, ... ,&lt;blockN&gt;
-     * &lt;tile1 id&gt; &lt;block1&gt;,&lt;block2&gt;, ... ,&lt;blockN&gt;
-     *    ...
-     * &lt;tileN-1 id&gt; &lt;block1&gt;,&lt;block2&gt;, ... ,&lt;blockN&gt;
-     * 
-     * exits
-     * &lt;tile0 id&gt; &lt;name1&gt;:&lt;id1&gt;,&lt;name2&gt;:&lt;id2&gt;, ... ,&lt;nameN&gt;:&lt;idN&gt;
-     * &lt;tile1 id&gt; &lt;name1&gt;:&lt;id1&gt;,&lt;name2&gt;:&lt;id2&gt;, ... ,&lt;nameN&gt;:&lt;idN&gt;
-     *    ...
-     * &lt;tileN-1 id&gt; &lt;name1&gt;:&lt;id1&gt;,&lt;name2&gt;:&lt;id2&gt;, ... ,&lt;nameN&gt;:&lt;idN&gt;
-     * </pre>
-     * 
-     * 
-     * For example: 
-     * <pre>
-     * 1
-     * 2
-     * Bob
-     * wood,wood,wood,soil
-     * 
-     * total:4
-     * 0 soil,soil,grass,wood
-     * 1 grass,grass,soil
-     * 2 soil,soil,soil,wood
-     * 3 grass,grass,grass,stone
-     * 
-     * exits
-     * 0 east:2,north:1,west:3
-     * 1 south:0
-     * 2 west:0
-     * 3 east:0
-     * </pre>
-     * Tile IDs are the ordering of tiles returned by getTiles()
-     * i.e. tile 0 is getTiles().get(0). 
-     * The ordering does not need to be checked when loading a map (but
-     * the saveMap function below does when saving). 
-     * 
-     * The function should do the following:
+     *
+     * The file's format must exactly be the following:
      * <ol>
-     * <li> Open the filename and read a map in the format
-     *     given above. </li>
-     * <li> Construct a new Builder with the name and inventory from the
-     *     file (to be returned by getBuilder()) </li>
-     * <li> Construct a new Position for the starting position from the
-     *     file to be returned as getStartPosition() </li>
-     * <li> Construct a Tile for each tile entry in the file (to be
-     *     returned by getTiles() and getTile()) </li>
-     * <li> Link each tile by the exits that are given. </li>
-     * <li> Throw a WorldMapFormatException if the format of the
-     *     file is incorrect, if loaded tiles contain too many blocks, or
-     *     GroundBlocks that have an index that is too
-     * high (i.e., if the Tile constructor
-     *     would throw an exception).</li>
-     * <li> Throw a WorldMapInconsistentException if the format is
-     *     correct, but tiles would end up in geometrically impossible
-     *     locations (see SparseTileArray.addLinkedTiles()). </li>
+     *     <li>Two lines with one integer per line. These will be the
+     *     starting x and y coordinates, respectively.</li>
+     *     <li>One line for the builder's name.</li>
+     *     <li>One line of comma-separated (no space) strings of block types
+     *     (see below) for the builder's inventory. Can be blank for an empty
+     *     inventory.</li>
+     *     <li>One blank line.</li>
+     *     <li>One line of "total:N" where N is an integer > 0. N represents
+     *     the number of tiles.</li>
+     *     <li>The next N lines is the tiles section and must contain
+     *     "[n] [blocks]" where n is in [0,N) and [blocks] is a comma-separated
+     *     (no spaces) list of blocks on the tile. Each n must appear on exactly
+     *     one line.</li>
+     *     <li>One blank line.</li>
+     *     <li>One line of exactly "exits". This starts the exits section.</li>
+     *     <li>N lines of "n [exits]" where n is in [0,N), each n appearing
+     *     on exactly one line. [exits] is a comma-separated list of
+     *     "[direction]:[tileID]" where [direction] is one of "north", "east",
+     *     "south" or "west" (case-sensitive) and [tileID] is in [0,N). Each
+     *     direction can appear at most once. A line of "n" or "n " with no
+     *     [exits] is allowed if a tile has no exits.</li>
      * </ol>
-     * Hint: create a SparseTileArray as a member and call SparseTileArray.addLinkedTiles() to populate it.
-     * @param filename the name to load the file from
-     * @throws WorldMapFormatException if the file is incorrectly formatted
+     *
+     * Valid block types are "grass", "wood", "stone" and "soil".
+     *
+     * If the file is not in the above format, a {@link WorldMapFormatException}
+     * will be thrown. Also, this will be thrown if:
+     * <ul>
+     *     <li>The builder's inventory contains blocks which can't be carried.
+     *     </li>
+     *     <li>A tile contains a ground block with 3 or more blocks before it,
+     *     or any block with 8 or more blocks before it.</li>
+     *     <li>Any given integer is not in [-2^31, 2^31-1].</li>
+     * </ul>
+     *
+     * Additionally, a {@link WorldMapInconsistentException} will be thrown if
+     * the format is valid but the described tiles and exits result in a
+     * geometrically impossible layout.
+     *
+     * @param filename the file path to load from.
+     * @throws WorldMapFormatException if the file is incorrectly formatted.
      * @throws WorldMapInconsistentException if the file is correctly
-     *          formatted, but has inconsistencies (such as overlapping tiles)
-     * @throws FileNotFoundException if the file does not exist
+     *          formatted, but has geometric inconsistencies.
+     * @throws FileNotFoundException if the file does not exist.
      * @require filename != null
-     * @ensure the loaded map is geometrically consistent
+     * @ensure the loaded map is geometrically consistent.
      */
     public WorldMap(String filename) throws WorldMapFormatException,
                                             WorldMapInconsistentException,
