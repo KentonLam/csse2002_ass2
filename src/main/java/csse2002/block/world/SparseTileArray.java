@@ -188,6 +188,7 @@ public class SparseTileArray {
             throws WorldMapInconsistentException {
         // We offload the actual computations to a helper function so we can
         // cleanup then throw here in one place instead of three.
+        resetInternalState();
         boolean success = breadthFirstAddLinkedTiles(
                 startingTile, new Position(startingX, startingY));
         if (!success) {
