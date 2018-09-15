@@ -19,7 +19,7 @@ public class Action {
 
     // These should really be represented as an enum class...
     // Actually, we should have an ActionType superclass with subclasses of
-    // specifc actions.
+    // specific actions.
 
     /**
      * MOVE_BUILDER action which is represented by integer 0.
