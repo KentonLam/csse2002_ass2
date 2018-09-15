@@ -358,6 +358,11 @@ public class WorldMap {
         }
 
         Map<String, Integer> outputMap = new HashMap<>();
+        if (string.equals("")) {
+            // If the string is empty, return an empty map.
+            return outputMap;
+        }
+
         for (String field : fields) {
             Matcher matcher = fieldRegex.matcher(field);
             // Throw on repeated names too.
