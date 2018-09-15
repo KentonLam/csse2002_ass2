@@ -61,11 +61,6 @@ public class WorldMap {
         public static List<Block> makeBlockList(List<String> blockTypes)
                 throws WorldMapFormatException {
             List<Block> blocks = new ArrayList<>();
-            // If there is only one string and it is empty, it came from an
-            // empty line of the file. Return an empty array.
-            if (blockTypes.size() == 1 && blockTypes.get(0).equals("")) {
-                return blocks;
-            }
             for (String blockType : blockTypes) {
                 try {
                     blocks.add(BlockTypes.valueOf(blockType).newInstance());
@@ -384,7 +379,14 @@ public class WorldMap {
         String[] inventoryStrings = safeReadLine(reader).split(",");
 
         // Convert the block strings to class instances.
-        List<Block> builderInventory = BlockTypes.makeBlockList(inventoryStrings);
+        List<Block> builderInventory;
+        if (inventoryStrings.length == 1 && inventoryStrings[0].equals("")) {
+            // makeBlockList will throw with a single empty string type, but
+            // we know that indicates an empty inventory.
+            builderInventory = new ArrayList<>();
+        } else {
+            builderInventory = BlockTypes.makeBlockList(inventoryStrings);
+        }
 
         // Shadows instance's builder field.
         Builder builder;
@@ -398,7 +400,7 @@ public class WorldMap {
             throw new WorldMapFormatException();
         }
         return new Pair<>(startPosition, builder);
-    }
+   }
 
     /**
      * Parses a string of the format "label1:N,label2:M,label3:P" into a
@@ -521,8 +523,13 @@ public class WorldMap {
             }
 
             // Add the list of block instances to the mapping.
-            blocksForTiles.put(num,
-                    BlockTypes.makeBlockList(blocksString.split(",")));
+            // Special case the empty string indicating no blocks.
+            if (blocksString.equals("")) {
+                blocksForTiles.put(num, new ArrayList<>());
+            } else {
+                blocksForTiles.put(num,
+                        BlockTypes.makeBlockList(blocksString.split(",")));
+            }
         }
         // Because the for loop iterates exactly 'numLines' times, if we
         // reach this point, we can be sure all tiles have one line each.
