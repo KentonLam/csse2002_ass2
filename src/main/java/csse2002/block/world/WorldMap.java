@@ -596,7 +596,7 @@ public class WorldMap {
      * @require position != null
      */
     public Tile getTile(Position position) {
-        return new Tile();
+        return sparseArray.getTile(position);
     }
 
     /**
@@ -607,7 +607,7 @@ public class WorldMap {
      * @return a list of ordered tiles
      */
     public List<Tile> getTiles() {
-        return new ArrayList<Tile>();
+        return sparseArray.getTiles();
     }
 
     /**
