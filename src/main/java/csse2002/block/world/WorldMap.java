@@ -342,18 +342,19 @@ public class WorldMap {
      * </p>
      *
      * @param string String to parse.
-     * @param allowMultiple If false, only one "label:N" will be permitted.
+     * @param exactlyOneField If true, an exception will be thrown unless there
+     * is exactly one field.
      * @return Map of label names to their number.
-     * @throws WorldMapFormatException If multiple==false and there are
-     * multiple fields, or the format is invalid (see above).
+     * @throws WorldMapFormatException If exactlyOneField==true and there is
+     * not exactly one field, or the format is invalid (see above).
      */
     private static Map<String, Integer> parseColonStrings(
-            String string, boolean allowMultiple)
+            String string, boolean exactlyOneField)
             throws WorldMapFormatException {
         Pattern fieldRegex = Pattern.compile("^([a-z]+):(\\d+)$");
 
         String[] fields = string.split(",");
-        if (!allowMultiple && fields.length > 1) {
+        if (!exactlyOneField && fields.length != 1) {
             throw new WorldMapFormatException();
         }
 
