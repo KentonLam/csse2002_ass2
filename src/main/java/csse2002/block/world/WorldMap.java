@@ -337,7 +337,6 @@ public class WorldMap {
      *     <li>Comma-delimited fields (no spaces)</li>
      *     <li>Lowercase field names</li>
      *     <li>No repeated field names</li>
-     *     <li>Number is a non-negative integer</li>
      * </ul>
      * </p>
      *
