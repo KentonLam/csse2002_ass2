@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -231,6 +233,8 @@ public class WorldMap {
             // manually propagate it here.
             throw e;
         } catch (IOException e) {
+            // loadWorldMap catches IOException itself, but opening and reading
+            // can throw this too...
             throw new WorldMapFormatException();
         }
     }
@@ -280,11 +284,44 @@ public class WorldMap {
      * @throws IOException If an I/O error occurs.
      */
     private void loadWorldMap(BufferedReader reader)
-            throws WorldMapFormatException, WorldMapInconsistentException,
-                   IOException {
+            throws WorldMapFormatException, WorldMapInconsistentException {
+        // Parse the builder section, containing starting position and
+        // builder information.
         Pair<Position, Builder> builderPair = parseBuilderSection(reader);
+
+        // Sets the instance variables.
         builder = builderPair.right;
         startPosition = builderPair.left;
+
+        Tile startingTile = builder.getCurrentTile();
+
+        parseEmptyLine(reader);
+
+        // Parses the tiles section.
+        List<Tile> tiles = parseTilesSection(reader, startingTile);
+
+        parseEmptyLine(reader);
+
+        // Loads and adds the exits to the given tiles.
+        parseExitsSection(reader, tiles);
+
+        // At this point, the exits should be set correctly; add and cross
+        // fingers.
+        sparseArray.addLinkedTiles(startingTile,
+                startPosition.getX(), startPosition.getY());
+    }
+
+    /**
+     * Parses exactly one line from the reader, and ensures it is empty.
+     * @param reader Reader object.
+     * @throws WorldMapFormatException If the line was non-empty, or an EOF or
+     * IOException occurred.
+     */
+    private static void parseEmptyLine(BufferedReader reader)
+            throws WorldMapFormatException {
+        if (!safeReadLine(reader).equals("")) {
+            throw new WorldMapFormatException();
+        }
     }
 
     /**
@@ -485,7 +522,54 @@ public class WorldMap {
     private static void parseExitsSection(BufferedReader reader,
                                           List<Tile> tiles)
             throws WorldMapFormatException {
+        // I'd use a simple String[], but there's no .contains() for arrays...
+        Set<String> exitDirections = new HashSet<>();
+        exitDirections.add("north");
+        exitDirections.add("east");
+        exitDirections.add("south");
+        exitDirections.add("west");
 
+        // First line of this section must be exactly "exits".
+        if (!safeReadLine(reader).equals("exits")) {
+            throw new WorldMapFormatException();
+        }
+
+        Set<Integer> seenTiles = new HashSet<>();
+
+        // The exits should contain exactly one line per tile, however not
+        // necessarily in any order.
+        for (int i = 0; i < tiles.size(); i++) {
+            Pair<Integer, String> pair = parseNumberedRow(safeReadLine(reader));
+
+            // ID of the current parent tile.
+            int currentTile = pair.left;
+
+            // .add() returns false if the key already existed in the set.
+            if (!seenTiles.add(currentTile)) {
+                // Exits for this tile have already been defined.
+                throw new WorldMapFormatException();
+            }
+
+            // Parses the "north:2,east:1,..." part of the string into a map.
+            // parseColonStrings enforces uniqueness of direction names.
+            Map<String, Integer> exits = parseColonStrings(pair.right, true);
+            for (Map.Entry<String, Integer> exit : exits.entrySet()) {
+                int tileID = exit.getValue();
+                if (tileID < 0 || tileID >= tiles.size()
+                        || !exitDirections.contains(exit.getKey())) {
+                    // The tile ID referred to does not exist or the exit
+                    // is invalid.
+                    throw new WorldMapFormatException();
+                }
+
+                try {
+                    tiles.get(currentTile).addExit(
+                            exit.getKey(), tiles.get(tileID));
+                } catch (NoExitException e) {
+                    throw new AssertionError("Null direction or tile.", e);
+                }
+            }
+        }
     }
 
     /**
