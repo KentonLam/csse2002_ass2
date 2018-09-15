@@ -354,7 +354,7 @@ public class WorldMap {
         Pattern fieldRegex = Pattern.compile("^([a-z]+):(\\d+)$");
 
         String[] fields = string.split(",");
-        if (!exactlyOneField && fields.length != 1) {
+        if (exactlyOneField && fields.length != 1) {
             throw new WorldMapFormatException();
         }
 
