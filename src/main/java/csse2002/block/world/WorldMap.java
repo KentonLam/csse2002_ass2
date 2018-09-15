@@ -463,6 +463,10 @@ public class WorldMap {
         }
 
         int numLines = totalLineMap.get("total");
+        if (numLines < 1) {
+            // Require at least one tile.
+            throw new WorldMapFormatException();
+        }
 
         // Mapping of tile ID to that tile's blocks.
         // We need a mapping because we cannot guarantee the ordering of tiles
