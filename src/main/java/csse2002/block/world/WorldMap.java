@@ -309,38 +309,22 @@ public class WorldMap {
     }
 
     /**
-     * Ensures the reader is at the end of the file. Specifically, it ensures
-     * reader is at EOF or has one blank line followed by immediately by EOF
+     * Ensures the reader is at the end of the file, otherwise throws EOF.
      * and throws otherwise.
      * @param reader Reader.
      * @throws WorldMapFormatException Reader is not at EOF.
      */
     private static void ensureAtEnd(BufferedReader reader)
             throws WorldMapFormatException {
-        // Iterates twice. The first line is allowed to be null or empty
-        // (in case of a trailing newline). The second line must be null.
-
-        //noinspection ConstantConditions
-        for (int i = 0; i < 2; i++) {
-            String lastLine;
-            try {
-                lastLine = reader.readLine();
-            } catch (IOException e) {
-                throw new WorldMapFormatException();
-            }
-            if (lastLine == null) {
-                // If we reach EOF, return.
-                return;
-            }
-            if (i == 0 && lastLine.equals("")) {
-                // If this is the first 'ending' line, we allow an empty line,
-                // which would've been caused by a trailing newline.
-                continue;
-            }
-            // If we reach here, we are not at EOF. Throw.
+        String lastLine;
+        try {
+            lastLine = reader.readLine();
+        } catch (IOException e) {
             throw new WorldMapFormatException();
         }
-        throw new AssertionError("Fell out the bottom of ensureAtEnd.");
+        if (lastLine != null) {
+            throw new WorldMapFormatException();
+        }
     }
 
     /**
