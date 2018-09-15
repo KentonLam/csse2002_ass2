@@ -283,7 +283,6 @@ public class WorldMap {
 
     /**
      * Ensures the reader is at the end of the file, otherwise throws EOF.
-     * and throws otherwise.
      * @param reader Reader.
      * @throws WorldMapFormatException Reader is not at EOF.
      */
@@ -412,8 +411,9 @@ public class WorldMap {
     }
 
     /**
-     * Parses a line of the form "N &lt;rest&gt;", ensuring N is an integer.
-     * If "rest" is empty, the space can be omitted.
+     * Parses a line of the form "N [rest]", ensuring N is an integer and
+     * [rest] contains no spaces. If [rest] is empty, the preceding space can
+     * be omitted.
      *
      * @param line String to parse.
      * @return Pair of the integer and the rest of the string.
@@ -421,6 +421,7 @@ public class WorldMap {
     private static Pair<Integer, String> parseNumberedRow(String line)
             throws WorldMapFormatException {
         String[] split = line.split(" ");
+        // Throw if there is more than one space in the string.
         if (split.length > 2) {
             throw new WorldMapFormatException();
         }
@@ -459,13 +460,14 @@ public class WorldMap {
 
         int numLines = totalLineMap.get("total");
         if (numLines < 1) {
-            // Require at least one tile.
+            // Require at least one tile. Any less will wreak havoc on the for
+            // loop.
             throw new WorldMapFormatException();
         }
 
         // Mapping of tile ID to that tile's blocks.
         // We need a mapping because we cannot guarantee the ordering of tiles
-        // is 0 to numTiles-1.
+        // is 0 to numTiles-1 in the file.
         Map<Integer, List<Block>> blocksForTiles = new HashMap<>();
 
         // Parse exactly the next 'numLines' rows.
@@ -509,7 +511,8 @@ public class WorldMap {
             }
         }
 
-        // Skip first tile; already handled above. Add the other tiles' blocks.
+        // Skip first tile; already handled above. Add the other tiles' blocks,
+        // correcting the order.
         for (int i = 1; i < numLines; i++) {
             Tile newTile;
             try {
@@ -528,7 +531,7 @@ public class WorldMap {
      *
      * First line must be "exits". The next N lines (where N is the number of
      * tiles) must be "n [direction]:[tileId],..." where n and tileId are valid
-     * tile IDs (0 <= n < N) and direction is a compass direction.
+     * tile IDs (0 &le; n &lt; N) and direction is a compass direction.
      *
      * The exit lines need not be ordered. One direction cannot be specified
      * more than once. Every tile must have exactly one line, even if there
@@ -541,6 +544,7 @@ public class WorldMap {
                                           List<Tile> tiles)
             throws WorldMapFormatException {
         // I'd use a simple String[], but there's no .contains() for arrays...
+        // On the plus side, O(1) .contains()!
         Set<String> exitDirections = new HashSet<>();
         exitDirections.add("north");
         exitDirections.add("east");
@@ -552,6 +556,8 @@ public class WorldMap {
             throw new WorldMapFormatException();
         }
 
+        // A set of tile IDs we've seen, to ensure no tile has more than on
+        // exit line.
         Set<Integer> seenTiles = new HashSet<>();
 
         // The exits should contain exactly one line per tile, however not
@@ -653,6 +659,8 @@ public class WorldMap {
      * @require filename != null
      */
     public void saveMap(String filename)
-                 throws java.io.IOException {}
+                 throws java.io.IOException {
+
+    }
 
 }
