@@ -131,7 +131,7 @@ public class Action {
 
     private static Action loadActionFromString(String actionString)
             throws ActionFormatException {
-        String[] split = actionString.split(" ");
+        String[] split = actionString.split(" ", -1);
         if (split.length > 2) {
             // Throw if 2 or more spaces are present.
             throw new ActionFormatException();
