@@ -36,7 +36,7 @@ public class WorldMap {
         }
 
         /**
-         * Instantiates a new class of the block type.
+         * Instantiates a new object of the block's type.
          * @return New block object.
          */
         public Block newInstance() {
@@ -53,7 +53,7 @@ public class WorldMap {
         /**
          * Accepts a list of block types as strings and returns a list of
          * block instances given by the input strings.
-         * @param blockTypes Iterable of block type strings.
+         * @param blockTypes List of block type strings.
          * @return List of block instances.
          * @throws WorldMapFormatException If there is no matching block type
          * for some input string.
@@ -255,10 +255,10 @@ public class WorldMap {
     }
 
     /**
-     * Wrapper around readLine() which throws WMFE on EOF or IOException.
-     * @param reader
-     * @return
-     * @throws WorldMapFormatException
+     * Wrapper around readLine() saving us from NullPointerExceptions.
+     * @param reader Reader.
+     * @return Next line, <i>never null</i>.
+     * @throws WorldMapFormatException If at EOF or IOException.
      */
     private static String safeReadLine(BufferedReader reader)
             throws WorldMapFormatException {
@@ -281,7 +281,6 @@ public class WorldMap {
      * @throws WorldMapFormatException If the file format is wrong.
      * @throws WorldMapInconsistentException If the tile and exits are
      * geometrically inconsistent.
-     * @throws IOException If an I/O error occurs.
      */
     private void loadWorldMap(BufferedReader reader)
             throws WorldMapFormatException, WorldMapInconsistentException {
@@ -305,6 +304,8 @@ public class WorldMap {
         // Loads and adds the exits to the given tiles.
         parseExitsSection(reader, tiles);
 
+        ensureAtEnd(reader);
+
         // At this point, the exits should be set correctly; add and cross
         // fingers.
         sparseArray.addLinkedTiles(startingTile,
@@ -312,9 +313,44 @@ public class WorldMap {
     }
 
     /**
-     * Parses exactly one line from the reader, and ensures it is empty.
+     * Ensures the reader is at the end of the file. Specifically, it ensures
+     * reader is at EOF or has one blank line followed by immediately by EOF
+     * and throws otherwise.
+     * @param reader Reader.
+     * @throws WorldMapFormatException Reader is not at EOF.
+     */
+    private static void ensureAtEnd(BufferedReader reader)
+            throws WorldMapFormatException {
+        // Iterates twice. The first line is allowed to be null or empty
+        // (in case of a trailing newline). The second line must be null.
+
+        //noinspection ConstantConditions
+        for (int i = 0; i < 2; i++) {
+            String lastLine;
+            try {
+                lastLine = reader.readLine();
+            } catch (IOException e) {
+                throw new WorldMapFormatException();
+            }
+            if (lastLine == null) {
+                // If we reach EOF, return.
+                return;
+            }
+            if (i == 0 && lastLine.equals("")) {
+                // If this is the first 'ending' line, we allow an empty line,
+                // which would've been caused by a trailing newline.
+                continue;
+            }
+            // If we reach here, we are not at EOF. Throw.
+            throw new WorldMapFormatException();
+        }
+        throw new AssertionError("Fell out the bottom of ensureAtEnd.");
+    }
+
+    /**
+     * Parses exactly one line from the reader and ensures it is empty.
      * @param reader Reader object.
-     * @throws WorldMapFormatException If the line was non-empty, or an EOF or
+     * @throws WorldMapFormatException If the line was non-empty, an EOF or
      * IOException occurred.
      */
     private static void parseEmptyLine(BufferedReader reader)
@@ -330,10 +366,9 @@ public class WorldMap {
      *
      * IMPORTANT: An empty new tile is instantiated here for the builder's
      * starting tile.
-     * @param reader
+     * @param reader Reader.
      * @return Pair of starting position and builder.
-     * @throws IOException
-     * @throws WorldMapFormatException
+     * @throws WorldMapFormatException Invalid formatted section.
      */
     private static Pair<Position, Builder> parseBuilderSection(BufferedReader reader)
             throws WorldMapFormatException {
@@ -374,6 +409,7 @@ public class WorldMap {
      *     <li>Comma-delimited fields (no spaces)</li>
      *     <li>Lowercase field names</li>
      *     <li>No repeated field names</li>
+     *     <li>Non-negative integers</li>
      * </ul>
      * </p>
      *
@@ -446,11 +482,10 @@ public class WorldMap {
      * Parses the tile section of the given reader. startingTile must be given
      * and must have no blocks. It is assumed that this tile is the builder's
      * starting tile.
-     * @param reader
+     * @param reader Reader.
      * @param startingTile The starting tile with no blocks on it.
      * @return List of tiles, list index corresponds to the ID as from the file.
-     * @throws IOException
-     * @throws WorldMapFormatException
+     * @throws WorldMapFormatException Invalid format.
      */
     private static List<Tile> parseTilesSection(BufferedReader reader,
                                                 Tile startingTile)
@@ -523,6 +558,20 @@ public class WorldMap {
         return tiles;
     }
 
+    /**
+     * Parses the exit section adds them to the tiles given as a parameter.
+     *
+     * First line must be "exits". The next N lines (where N is the number of
+     * tiles) must be "n [direction]:[tileId],..." where n and tileId are valid
+     * tile IDs (0 <= n < N) and direction is a compass direction.
+     *
+     * The exit lines need not be ordered. One direction cannot be specified
+     * more than once. Every tile must have exactly one line, even if there
+     * are no exits.
+     * @param reader Reader.
+     * @param tiles List of tile objects. Exits will be added to these.
+     * @throws WorldMapFormatException Invalid format (see above).
+     */
     private static void parseExitsSection(BufferedReader reader,
                                           List<Tile> tiles)
             throws WorldMapFormatException {
@@ -578,7 +627,7 @@ public class WorldMap {
 
     /**
      * Gets the builder associated with this block world.
-     * @return the builder object
+     * @return the builder object.
      */
     public Builder getBuilder() {
         return builder;
@@ -593,10 +642,9 @@ public class WorldMap {
     }
 
     /**
-     * Get a tile by position. 
-     * Hint: call SparseTileArray.getTile()
-     * @param position get the Tile at this position
-     * @return the tile at that position
+     * Get a tile by its position.
+     * @param position get the Tile at this position.
+     * @return the tile at that position.
      * @require position != null
      */
     public Tile getTile(Position position) {
@@ -604,11 +652,9 @@ public class WorldMap {
     }
 
     /**
-     * Get a list of tiles in a breadth-first-search
-     * order (see <a href="../../../csse2002/block/world/SparseTileArray.html" title="class in csse2002.block.world"><code>SparseTileArray.getTiles()</code></a>
-     * for details). 
-     * Hint: call SparseTileArray.getTiles().
-     * @return a list of ordered tiles
+     * Gets a list of tiles in a breadth-first-search order from the starting
+     * tile.
+     * @return a list of ordered tiles.
      */
     public List<Tile> getTiles() {
         return sparseArray.getTiles();
