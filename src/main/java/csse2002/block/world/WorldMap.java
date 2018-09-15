@@ -334,7 +334,7 @@ public class WorldMap {
 
         // The next 2 lines are the builder's name and inventory.
         String builderName = safeReadLine(reader);
-        String[] inventoryStrings = safeReadLine(reader).split(",");
+        String[] inventoryStrings = safeReadLine(reader).split(",", -1);
 
         // Convert the block strings to class instances.
         List<Block> builderInventory;
@@ -385,7 +385,7 @@ public class WorldMap {
             throws WorldMapFormatException {
         Pattern fieldRegex = Pattern.compile("^([a-z]+):(\\d+)$");
 
-        String[] fields = string.split(",");
+        String[] fields = string.split(",", -1);
         if (exactlyOneField && fields.length != 1) {
             throw new WorldMapFormatException();
         }
@@ -421,7 +421,7 @@ public class WorldMap {
      */
     private static Pair<Integer, String> parseNumberedRow(String line)
             throws WorldMapFormatException {
-        String[] split = line.split(" ");
+        String[] split = line.split(" ", -1);
         // Throw if there is more than one space in the string.
         if (split.length > 2) {
             throw new WorldMapFormatException();
@@ -489,7 +489,7 @@ public class WorldMap {
                 blocksForTiles.put(num, new ArrayList<>());
             } else {
                 blocksForTiles.put(num,
-                        BlockTypes.makeBlockList(blocksString.split(",")));
+                        BlockTypes.makeBlockList(blocksString.split(",", -1)));
             }
         }
         // Because the for loop iterates exactly 'numLines' times, if we
