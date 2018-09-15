@@ -145,7 +145,7 @@ public class ActionTest
     @Test
     public void testLoadActionDoesNoValidation() throws ActionFormatException {
         // loadAction should do no validation beyond ensuring a secondary
-        // action string exists.
+        // action string exists if required.
         String[] actionStrings = {
                 "MOVE_BUILDER to_the_fourth_dimension",
                 "MOVE_BLOCK somewhere,idk?!@#$%^&*()_+:(){:|:&};:",
