@@ -22,6 +22,7 @@ import org.junit.rules.Timeout;
 import java.lang.reflect.*;
 
 
+@SuppressWarnings("ALL")
 public class TestMethodsAssignment2 {
 
 
@@ -53,7 +54,7 @@ public class TestMethodsAssignment2 {
             this.returnType = returnType;
             this.argumentTypes =
                 new ArrayList<>(Arrays.<String>asList(argumentTypes));
-            this.exceptionTypes =
+            exceptionTypes =
                 new ArrayList<>(Arrays.<String>asList(NO_EXCEPTIONS));
             modifiers = Modifier.PUBLIC;
         }

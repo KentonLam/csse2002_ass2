@@ -185,6 +185,7 @@ public class WorldMapTest {
 
     private boolean testThrowsFormatException(String filename)
             throws WorldMapInconsistentException, FileNotFoundException {
+        //noinspection CatchMayIgnoreException
         try {
             WorldMap map = new WorldMap(filename);
             return false;

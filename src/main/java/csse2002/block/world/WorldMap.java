@@ -23,13 +23,14 @@ public class WorldMap {
      * Enum mapping block type strings (used in the world map file format) to
      * their Java classes.
      */
+    @SuppressWarnings("WeakerAccess")
     private enum BlockTypes {
         wood(WoodBlock.class),
         grass(GrassBlock.class),
         soil(SoilBlock.class),
         stone(StoneBlock.class);
 
-        private Class<? extends Block> blockClass;
+        private final Class<? extends Block> blockClass;
 
         BlockTypes(Class<? extends Block> blockClass) {
             this.blockClass = blockClass;

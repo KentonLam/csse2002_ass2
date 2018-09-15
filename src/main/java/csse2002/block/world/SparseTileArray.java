@@ -23,13 +23,13 @@ public class SparseTileArray {
      */
     private class TileAtPos
             extends AbstractMap.SimpleImmutableEntry<Tile, Position> {
-        private Tile tile;
-        private final Position position;
+        public final Tile tile;
+        public final Position position;
 
         private TileAtPos(Tile tile, Position pos) {
             super(tile, pos);
             this.tile = tile;
-            this.position = pos;
+            position = pos;
         }
     }
 

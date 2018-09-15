@@ -73,7 +73,7 @@ public class Action {
      * @return the primary action
      */
     public int getPrimaryAction() {
-        return this.primaryAction;
+        return primaryAction;
     }
 
     /**
@@ -82,7 +82,7 @@ public class Action {
      *  action exists
      */
     public String getSecondaryAction() {
-        return this.secondaryAction;
+        return secondaryAction;
     }
 
     /**

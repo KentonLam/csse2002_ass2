@@ -12,10 +12,10 @@ import java.util.Map;
 
 public class SparseTileArrayTest {
 
-    SparseTileArray sparseArray;
-    Tile tile1;
-    Tile tile2;
-    Tile tile3;
+    private SparseTileArray sparseArray;
+    private Tile tile1;
+    private Tile tile2;
+    private Tile tile3;
 
     @Before 
     public void setup() {

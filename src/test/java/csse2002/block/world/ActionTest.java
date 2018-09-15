@@ -10,10 +10,10 @@ import org.junit.Before;
  */
 public class ActionTest
 {
-    Action moveBuilderAction;
-    Action moveBlockAction;
-    Action digAction;
-    Action dropAction;
+    private Action moveBuilderAction;
+    private Action moveBlockAction;
+    private Action digAction;
+    private Action dropAction;
 
     @Before 
     public void setupActions() {

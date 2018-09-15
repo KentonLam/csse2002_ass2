@@ -28,7 +28,7 @@ public class Position implements Comparable<Position> {
      * @return the x coordinate.
      */
     public int getX() {
-        return this.x;
+        return x;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Position implements Comparable<Position> {
      * @return the y coordinate.
      */
     public int getY() {
-        return this.y;
+        return y;
     }
 
     /**
@@ -55,7 +55,7 @@ public class Position implements Comparable<Position> {
             return false;
         }
         Position other = (Position)obj;
-        return this.x == other.getX() && this.y == other.getY();
+        return x == other.getX() && y == other.getY();
     }
 
     /**
@@ -67,7 +67,7 @@ public class Position implements Comparable<Position> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.x, this.y);
+        return Objects.hash(x, y);
     }
 
     /**
@@ -84,12 +84,12 @@ public class Position implements Comparable<Position> {
      * @return -1, 0, or 1 depending on conditions above
      */
     public int compareTo(Position other) {
-        if (this.x != other.getX()) {
-            return Integer.signum(this.x - other.getX());
+        if (x != other.getX()) {
+            return Integer.signum(x - other.getX());
         }
         // At this point, we know the x components are equal, so the result
         // depends only on the y components.
-        return Integer.signum(this.y - other.getY());
+        return Integer.signum(y - other.getY());
     }
 
     /**
@@ -102,7 +102,7 @@ public class Position implements Comparable<Position> {
      */
     @Override
     public String toString() {
-        return "("+this.x+", "+this.y+")";
+        return "("+ x +", "+ y +")";
     }
 
 }
