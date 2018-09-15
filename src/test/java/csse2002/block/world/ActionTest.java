@@ -81,6 +81,12 @@ public class ActionTest
     }
 
     @Test(expected = ActionFormatException.class)
+    public void testLoadActionMoveBuilderTrailingSpace()
+            throws ActionFormatException {
+        Action.loadAction(makeReader("MOVE_BUILDER north "));
+    }
+
+    @Test(expected = ActionFormatException.class)
     public void testLoadActionMoveNoSecondary() throws ActionFormatException {
         Action.loadAction(makeReader("MOVE_BUILDER"));
     }
