@@ -166,6 +166,12 @@ public class WorldMapTest {
                 0, emptyMap.getTile(new Position(11, 7)).getExits().size());
     }
 
+    @Test(expected = FileNotFoundException.class)
+    public void testConstructorFileNotFound()
+            throws BlockWorldException, FileNotFoundException {
+        new WorldMap("non-existent.txt");
+    }
+
     @Test
     public void testInvalidMaps() throws BlockWorldException, IOException {
         File[] files = new File("worldmaps_invalid").listFiles();
