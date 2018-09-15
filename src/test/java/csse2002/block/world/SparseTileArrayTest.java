@@ -169,4 +169,26 @@ public class SparseTileArrayTest {
         sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
+    @Test
+    public void testAddTilesResetsOnException() throws BlockWorldException {
+        sparseArray.addLinkedTiles(tile1, 0, 0);
+
+        // Set up a few valid tiles.
+        tile1.addExit("north", tile2);
+        tile2.addExit("north", tile3);
+        // Tile linking to itself should fail.
+        tile3.addExit("east", tile3);
+        try {
+            sparseArray.addLinkedTiles(tile1, 0, 0);
+            // We assume addLinkedTiles throws as required, otherwise another
+            // test would've failed.
+            fail();
+        } catch (WorldMapInconsistentException e) {}
+
+        assertNull("Sparse map not reset on exception.",
+                sparseArray.getTile(new Position(0, 0)));
+        assertEquals("Sparse map not reset to size 0.",
+                0, sparseArray.getTiles().size());
+    }
+
 }
