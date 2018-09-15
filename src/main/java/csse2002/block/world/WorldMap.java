@@ -329,7 +329,8 @@ public class WorldMap {
         // throw for us.
         int startX = safeParseInt(safeReadLine(reader));
         int startY = safeParseInt(safeReadLine(reader));
-        // Shadows instance field with same name.
+        // Shadows instance field with same name, but this is static so it's
+        // alright.
         Position startPosition = new Position(startX, startY);
 
         // The next 2 lines are the builder's name and inventory.
@@ -528,7 +529,7 @@ public class WorldMap {
     }
 
     /**
-     * Parses the exit section adds them to the tiles given as a parameter.
+     * Parses the exit section and adds them to the tiles given as a parameter.
      *
      * First line must be "exits". The next N lines (where N is the number of
      * tiles) must be "n [direction]:[tileId],..." where n and tileId are valid
@@ -557,7 +558,7 @@ public class WorldMap {
             throw new WorldMapFormatException();
         }
 
-        // A set of tile IDs we've seen, to ensure no tile has more than on
+        // A set of tile IDs we've seen, to ensure no tile has more than one
         // exit line.
         Set<Integer> seenTiles = new HashSet<>();
 
