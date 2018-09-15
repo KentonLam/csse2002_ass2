@@ -1,0 +1,12 @@
+0
+1
+Name
+wood
+
+total:2
+0
+0
+
+exits 
+0
+1

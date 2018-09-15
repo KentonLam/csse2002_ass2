@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class WorldMapTest {
@@ -162,5 +164,31 @@ public class WorldMapTest {
     public void testEmptyMapTileExits() {
         assertEquals("Tile should not have exits.",
                 0, emptyMap.getTile(new Position(11, 7)).getExits().size());
+    }
+
+    @Test
+    public void testInvalidMaps() throws BlockWorldException, IOException {
+        File[] files = new File("worldmaps_invalid").listFiles();
+
+        List<String> failedFiles = new ArrayList<>();
+        for (File file : files) {
+            // If it doesn't throw, add it to the list of failures.
+            if (!testThrowsFormatException(file.getAbsolutePath())) {
+                failedFiles.add(file.getName());
+            }
+        }
+        if (failedFiles.size() != 0) {
+            fail("The following files should've thrown a WMFE: "
+                    + String.join(", ", failedFiles));
+        }
+    }
+
+    private boolean testThrowsFormatException(String filename)
+            throws WorldMapInconsistentException, FileNotFoundException {
+        try {
+            WorldMap map = new WorldMap(filename);
+            return false;
+        } catch (WorldMapFormatException e) {}
+        return true;
     }
 }

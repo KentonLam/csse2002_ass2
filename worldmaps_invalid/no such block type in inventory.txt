@@ -1,0 +1,10 @@
+0
+1
+Name
+lava
+
+total:1
+0
+
+exits 
+0
