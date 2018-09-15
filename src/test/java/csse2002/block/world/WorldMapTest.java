@@ -194,8 +194,9 @@ public class WorldMapTest {
         //noinspection CatchMayIgnoreException
         try {
             WorldMap map = new WorldMap(filename);
-            return false;
-        } catch (WorldMapFormatException e) {}
-        return true;
+        } catch (WorldMapFormatException e) {
+            return true;
+        }
+        return false;
     }
 }
