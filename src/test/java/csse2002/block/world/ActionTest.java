@@ -30,7 +30,7 @@ public class ActionTest
         moveBuilderAction = new Action(Action.MOVE_BUILDER, "south");
         moveBlockAction = new Action(Action.MOVE_BLOCK, "east");
         digAction = new Action(Action.DIG, "");
-        dropAction = new Action(Action.DROP, "");
+        dropAction = new Action(Action.DROP, "1");
     }
 
     @Test
