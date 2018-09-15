@@ -154,8 +154,8 @@ public class ActionTest
                 "DROP ", // secondary action would be empty string.
                 "MOVE_BUILDER "
         };
-        for (int i = 0; i < actionStrings.length; i++) {
-            Action action = Action.loadAction(makeReader(actionStrings[i]));
+        for (String actionString : actionStrings) {
+            Action action = Action.loadAction(makeReader(actionString));
         }
     }
 }
