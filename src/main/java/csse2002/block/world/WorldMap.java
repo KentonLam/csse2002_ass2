@@ -456,7 +456,7 @@ public class WorldMap {
                                                 Tile startingTile)
             throws WorldMapFormatException {
         String totalLine = safeReadLine(reader);
-        Map<String, Integer> totalLineMap = parseColonStrings(totalLine, false);
+        Map<String, Integer> totalLineMap = parseColonStrings(totalLine, true);
         if (!totalLineMap.containsKey("total")) {
             // Either it has no or the wrong string label, throw.
             throw new WorldMapFormatException();
@@ -552,7 +552,7 @@ public class WorldMap {
 
             // Parses the "north:2,east:1,..." part of the string into a map.
             // parseColonStrings enforces uniqueness of direction names.
-            Map<String, Integer> exits = parseColonStrings(pair.right, true);
+            Map<String, Integer> exits = parseColonStrings(pair.right, false);
             for (Map.Entry<String, Integer> exit : exits.entrySet()) {
                 int tileID = exit.getValue();
                 if (tileID < 0 || tileID >= tiles.size()
