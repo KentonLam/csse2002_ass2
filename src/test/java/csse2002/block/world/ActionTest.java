@@ -8,6 +8,8 @@ import org.junit.Before;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit test for Action.
@@ -29,6 +31,23 @@ public class ActionTest
         moveBlockAction = new Action(Action.MOVE_BLOCK, "east");
         digAction = new Action(Action.DIG, "");
         dropAction = new Action(Action.DROP, "");
+    }
+
+    @Test
+    public void testConstructorDoesntThrow() {
+        Map<Integer, String> actionInputs = new HashMap<>();
+        actionInputs.put(Action.DIG, "northnortheast");
+        actionInputs.put(-100, "                  ");
+        actionInputs.put(Integer.MAX_VALUE, null);
+        actionInputs.put(Integer.MIN_VALUE, "west");
+
+        for (Map.Entry<Integer, String> entry : actionInputs.entrySet()) {
+            Action action = new Action(entry.getKey(), entry.getValue());
+            assertEquals("Action primary wrong.",
+                    entry.getKey().intValue(), action.getPrimaryAction());
+            assertEquals("Action secondary wrong.",
+                    entry.getValue(), action.getSecondaryAction());
+        }
     }
 
     @Test
