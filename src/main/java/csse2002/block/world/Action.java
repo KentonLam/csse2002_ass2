@@ -1,5 +1,10 @@
 package csse2002.block.world;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
  * Represents an Action which can be performed on the block world (also
  * called world map). 
@@ -12,7 +17,10 @@ package csse2002.block.world;
 
 public class Action {
 
-    // TODO: These should really be represented as an enum class.
+    // These should really be represented as an enum class...
+    // Actually, we should have an ActionType superclass with subclasses of
+    // specifc actions.
+
     /**
      * MOVE_BUILDER action which is represented by integer 0.
      */
@@ -40,7 +48,7 @@ public class Action {
     private final String secondaryAction;
 
     /**
-     * Create an Action that represents a manipulation of the blockworld.
+     * Create an Action that represents a manipulation of the block world.
      * An action is represented by a primary action (one of MOVE_BUILDER,
      * MOVE_BLOCK, DIG or DROP), and a secondary action
      * 
@@ -107,8 +115,79 @@ public class Action {
      */
     public static Action loadAction(java.io.BufferedReader reader)
                              throws ActionFormatException {
-        // TODO: Implement Action.loadAction().
-        return new Action(0, "DUMMY");
+        String line;
+        try {
+            line = reader.readLine();
+        } catch (IOException e) {
+            throw new ActionFormatException();
+        }
+
+        if (line == null) {
+            return null;
+        } else {
+            return loadActionFromString(line);
+        }
+    }
+
+    private static Action loadActionFromString(String actionString)
+            throws ActionFormatException {
+        String[] split = actionString.split(" ");
+        if (split.length > 2) {
+            // Throw if 2 or more spaces are present.
+            throw new ActionFormatException();
+        }
+
+        // Detect what type of primary action it is.
+        String primary = split[0];
+        int primaryID;
+        switch (primary) {
+            case "MOVE_BUILDER":
+                primaryID = MOVE_BUILDER;
+                break;
+            case "MOVE_BLOCK":
+                primaryID = MOVE_BLOCK;
+                break;
+            case "DIG":
+                primaryID = DIG;
+                break;
+            case "DROP":
+                primaryID = DROP;
+                break;
+            default:
+                throw new ActionFormatException();
+        }
+
+        // Validate secondary action based on primary type.
+        boolean secondaryValid = false;
+        String secondary = null;
+        switch (primaryID) {
+            // These require some secondary action.
+            case MOVE_BUILDER:
+            case MOVE_BLOCK:
+            case DROP:
+                secondaryValid = split.length == 2;
+                // Using ternary so we don't need _another_ switch/case.
+                // If !secondaryValid, we will throw, avoiding NPEs.
+                secondary = secondaryValid ? split[1] : null;
+                break;
+            case DIG: // DIG mandates no secondary action.
+                secondaryValid = split.length == 1;
+                secondary = secondaryValid ? "" : null;
+                break;
+            default:
+        }
+
+        if (!secondaryValid) {
+            throw new ActionFormatException();
+        }
+        // Sanity check. Pro
+        if (secondary == null) {
+            throw new AssertionError("Secondary action is valid but null.");
+        }
+
+        // If we reach here, we have a valid primary and secondary.
+        // Return a new action.
+        return new Action(primaryID, secondary);
     }
 
     /**
