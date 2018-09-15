@@ -141,4 +141,21 @@ public class ActionTest
         assertEquals("Drop secondary wrong.",
                 "3", dropAction.getSecondaryAction());
     }
+
+    @Test
+    public void testLoadActionDoesNoValidation() throws ActionFormatException {
+        // loadAction should do no validation beyond ensuring a secondary
+        // action string exists.
+        String[] actionStrings = {
+                "MOVE_BUILDER to_the_fourth_dimension",
+                "MOVE_BLOCK somewhere,idk?!@#$%^&*()_+:(){:|:&};:",
+                "DROP -100",
+                "DROP thatblock",
+                "DROP ", // secondary action would be empty string.
+                "MOVE_BUILDER "
+        };
+        for (int i = 0; i < actionStrings.length; i++) {
+            Action action = Action.loadAction(makeReader(actionStrings[i]));
+        }
+    }
 }
