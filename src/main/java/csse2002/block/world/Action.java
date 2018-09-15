@@ -180,7 +180,7 @@ public class Action {
         if (!secondaryValid) {
             throw new ActionFormatException();
         }
-        // Sanity check. Pro
+        // Sanity check.
         if (secondary == null) {
             throw new AssertionError("Secondary action is valid but null.");
         }
