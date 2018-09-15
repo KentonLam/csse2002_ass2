@@ -63,6 +63,13 @@ public class SparseTileArrayTest {
     }
 
     @Test
+    public void testEmptyTileGetTiles() {
+        assertEquals("Empty tile has non-empty getTiles().",
+                new ArrayList<Block>(),
+                sparseArray.getTiles());
+    }
+
+    @Test
     public void testGetTile() throws BlockWorldException {
         Tile tile = new Tile();
         sparseArray.addLinkedTiles(tile, 100, 50);
