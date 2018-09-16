@@ -738,15 +738,11 @@ public class WorldMap {
     }
 
     private static String makeBlockListString(List<Block> blocks) {
-        StringBuilder stringBuilder = new StringBuilder();
+        List<String> blocksList = new ArrayList<>();
         for (int i = 0; i < blocks.size(); i++) {
             Block inventoryBlock = blocks.get(i);
-            if (i > 0) {
-                stringBuilder.append(",");
-            }
-            stringBuilder.append(
-                    BlockTypes.fromInstance(inventoryBlock).name());
+            blocksList.add(BlockTypes.fromInstance(inventoryBlock).name());
         }
-        return stringBuilder.toString();
+        return String.join(",", blocksList);
     }
 }
