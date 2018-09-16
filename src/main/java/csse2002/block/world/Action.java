@@ -364,7 +364,7 @@ public class Action {
      * @throws InvalidBlockException if the action resulted in this exception.
      * @throws ActionFormatException action is invalid or has invalid secondary.
      */
-    public static void unsafeProcessAction(Action action, WorldMap map)
+    private static void unsafeProcessAction(Action action, WorldMap map)
             throws NoExitException, TooHighException, TooLowException,
                    InvalidBlockException, ActionFormatException {
         int primary = action.primaryAction;
