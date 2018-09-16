@@ -199,4 +199,10 @@ public class WorldMapTest {
         }
         return false;
     }
+
+    @Test
+    public void testSaveMapNormal() throws BlockWorldException, IOException {
+        basicMap.saveMap("worldmaps_valid/basicmap_saved.txt");
+        new WorldMap("worldmaps_valid/basicmap_saved.txt");
+    }
 }
