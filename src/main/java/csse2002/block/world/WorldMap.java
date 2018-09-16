@@ -138,6 +138,15 @@ public class WorldMap {
     /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
 
+    /** Valid compass direction names. */
+    private static final Set<String> directionNames = new HashSet<>();
+    static {
+        directionNames.add("north");
+        directionNames.add("east");
+        directionNames.add("south");
+        directionNames.add("west");
+    }
+
     /**
      * Constructs a new block world map from a startingTile, position and
      * builder.
@@ -567,14 +576,6 @@ public class WorldMap {
     private static void parseExitsSection(BufferedReader reader,
                                           List<Tile> tiles)
             throws WorldMapFormatException {
-        // I'd use a simple String[], but there's no .contains() for arrays...
-        // On the plus side, O(1) .contains()!
-        Set<String> exitDirections = new HashSet<>();
-        exitDirections.add("north");
-        exitDirections.add("east");
-        exitDirections.add("south");
-        exitDirections.add("west");
-
         // First line of this section must be exactly "exits".
         if (!safeReadLine(reader).equals("exits")) {
             throw new WorldMapFormatException();
@@ -604,7 +605,7 @@ public class WorldMap {
             for (Map.Entry<String, Integer> exit : exits.entrySet()) {
                 int tileID = exit.getValue();
                 if (tileID < 0 || tileID >= tiles.size()
-                        || !exitDirections.contains(exit.getKey())) {
+                        || !directionNames.contains(exit.getKey())) {
                     // The tile ID referred to does not exist or the exit
                     // is invalid.
                     throw new WorldMapFormatException();
@@ -732,7 +733,14 @@ public class WorldMap {
                                           List<Tile> tiles) {
         List<String> exitStrings = new ArrayList<>();
         for (Map.Entry<String, Tile> exit : exits.entrySet()) {
-            exitStrings.add(exit.getKey()+":"+tiles.indexOf(exit.getValue()));
+            if (!directionNames.contains(exit.getKey())) {
+                continue; // Ignore exits which aren't N, E, S, W.
+            }
+            int tileID = tiles.indexOf(exit.getValue());
+            if (tileID == -1) {
+                throw new AssertionError("Exit tile not in tiles.");
+            }
+            exitStrings.add(exit.getKey()+":"+tileID);
         }
         return String.join(",", exitStrings);
     }
