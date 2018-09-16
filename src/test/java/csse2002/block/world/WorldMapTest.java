@@ -203,6 +203,6 @@ public class WorldMapTest {
     @Test
     public void testSaveMapNormal() throws BlockWorldException, IOException {
         basicMap.saveMap("worldmaps_valid/basicmap_saved.txt");
-        new WorldMap("worldmaps_valid/basicmap_saved.txt");
+        WorldMap map = new WorldMap("worldmaps_valid/basicmap_saved.txt");
     }
 }
