@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -695,7 +696,13 @@ public class WorldMap {
             file.println("total:" + tiles.size());
 
             String newline = System.getProperty("line.separator");
-            StringBuilder exitsBuilder = new StringBuilder("exits"+newline);
+            // We use this instead of StringBuilder for the easy print/println
+            // to handle \r\n vs \n.
+            // We need a StringWriter so we can retrieve the final string.
+            // PrintWriter handles newlines.
+            StringWriter exitsWriter = new StringWriter();
+            PrintWriter exits = new PrintWriter(exitsWriter);
+            exits.println("exits");
 
             int tileID = 0;
             for (Tile tile : tiles) {
@@ -707,18 +714,17 @@ public class WorldMap {
 
                 // We will build the exits string here to append after the tile
                 // section.
-                exitsBuilder.append(Integer.toString(tileID));
+                exits.print(Integer.toString(tileID));
                 if (tile.getExits().size() != 0) {
-                    exitsBuilder.append(" ");
-                    exitsBuilder.append(makeExitsString(tile.getExits(), tiles));
+                    exits.print(" "+ makeExitsString(tile.getExits(), tiles));
                 }
-                exitsBuilder.append(newline);
+                exits.println();
 
                 tileID++;
             }
             // Blank line then "exits".
             file.println();
-            file.print(exitsBuilder.toString());
+            file.print(exitsWriter.toString());
         }
     }
 
