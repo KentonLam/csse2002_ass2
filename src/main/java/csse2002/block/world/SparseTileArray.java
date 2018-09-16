@@ -18,22 +18,6 @@ import java.util.Queue;
 public class SparseTileArray {
 
     /**
-     * Helper class for a 2-tuple of tile and a position.
-     * Used during the BFS as a queue item.
-     */
-    private class TileAtPos
-            extends AbstractMap.SimpleImmutableEntry<Tile, Position> {
-        public final Tile tile;
-        public final Position position;
-
-        private TileAtPos(Tile tile, Position pos) {
-            super(tile, pos);
-            this.tile = tile;
-            position = pos;
-        }
-    }
-
-    /**
      * Helper class containing arithmetic operations for Position objects.
      */
     private static class PosFunc {
@@ -198,6 +182,19 @@ public class SparseTileArray {
     }
 
     /**
+     * Shortcut for
+     * <code>new AbstractMap.SimpleImmutableEntry(left, right)</code>.
+     * @param left Left object.
+     * @param right Right object.
+     * @param <L> Left type.
+     * @param <R> Right type.
+     * @return The entry pair.
+     */
+    private static <L, R> Map.Entry<L, R> makeEntry(L left, R right) {
+        return new AbstractMap.SimpleImmutableEntry<>(left, right);
+    }
+
+    /**
      * Helper function to execute the breadth first recursion through
      * startingTile's adjacent tiles.
      * @param startingTile Tile to start from, cannot be null.
@@ -208,14 +205,14 @@ public class SparseTileArray {
     private boolean breadthFirstAddLinkedTiles(Tile startingTile,
                                                Position startingPos) {
         // Initialise queue with starting tile.
-        Queue<TileAtPos> tilesToCheck = new LinkedList<>();
-        tilesToCheck.add(new TileAtPos(startingTile, startingPos));
+        Queue<Map.Entry<Tile, Position>> tilesToCheck = new LinkedList<>();
+        tilesToCheck.add(makeEntry(startingTile, startingPos));
 
         while (!tilesToCheck.isEmpty()) {
             // Extract the next tile in the queue.
-            TileAtPos tileAtPos = tilesToCheck.remove();
-            Tile currentTile = tileAtPos.tile;
-            Position currentPos = tileAtPos.position;
+            Map.Entry<Tile, Position> tileAtPos = tilesToCheck.remove();
+            Tile currentTile = tileAtPos.getKey();
+            Position currentPos = tileAtPos.getValue();
 
             // The following 'if' logic makes sure each tile exists in only
             // one position.
@@ -256,7 +253,7 @@ public class SparseTileArray {
                     Tile adjTile = exits.get(dir.name());
 
                     // All good, queue the adjacent tile to be processed.
-                    tilesToCheck.add(new TileAtPos(
+                    tilesToCheck.add(makeEntry(
                             adjTile,
                             PosFunc.add(currentPos, dir.position())
                     ));
