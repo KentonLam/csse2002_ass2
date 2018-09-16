@@ -3,7 +3,9 @@ package csse2002.block.world;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +34,15 @@ public class WorldMap {
         stone(StoneBlock.class);
 
         private final Class<? extends Block> blockClass;
+
+        private final static Map<Class, BlockTypes> classToType = new HashMap<>();
+
+        static {
+            // Because we can't access static from an enum constructor.
+            for (BlockTypes blockType : BlockTypes.values()) {
+                classToType.put(blockType.blockClass, blockType);
+            }
+        }
 
         BlockTypes(Class<? extends Block> blockClass) {
             this.blockClass = blockClass;
@@ -85,6 +96,17 @@ public class WorldMap {
                 throws WorldMapFormatException {
             return makeBlockList(Arrays.asList(blockTypesArray));
         }
+
+        /**
+         * Returns the enum value corresponding to a given block instance's
+         * type.
+         * @param block Block instance.
+         * @return BlockTypes enum value.
+         */
+        public static BlockTypes fromInstance(Block block) {
+            return classToType.get(block.getClass());
+        }
+
     }
 
     /**
@@ -657,12 +679,86 @@ public class WorldMap {
      * 
      * Hint: call getTiles()
      * @param filename the filename to be written to
-     * @throws java.io.IOException if the file cannot be opened or written to.
+     * @throws IOException if the file cannot be opened or written to.
      * @require filename != null
      */
     public void saveMap(String filename)
-                 throws java.io.IOException {
+                 throws IOException {
+        FileWriter fileWriter = new FileWriter(filename);
+        try {
+            fileWriter.write(Integer.toString(startPosition.getX())+"\n");
+            fileWriter.write(Integer.toString(startPosition.getY())+"\n");
+            fileWriter.write(builder.getName()+"\n");
+            List<Block> inventory = builder.getInventory();
+            fileWriter.write(makeBlockListString(inventory)+"\n");
+            fileWriter.write("\n\n"); // Newline for inventory, then blank line.
 
+            List<Tile> tiles = getTiles();
+            fileWriter.write("total:"+tiles.size()+"\n");
+
+            StringBuilder exitsBuilder = new StringBuilder("exits\n");
+
+            int tileID = 0;
+            for (Tile tile : tiles) {
+                fileWriter.write(Integer.toString(tileID));
+                if (tile.getBlocks().size() != 0) {
+                    fileWriter.write(" "+ makeBlockListString(tile.getBlocks()));
+                }
+                fileWriter.write("\n");
+
+                // We will build the exits string here to append after the tile
+                // section.
+                exitsBuilder.append(Integer.toString(tileID));
+                if (tile.getExits().size() != 0) {
+                    exitsBuilder.append(" ");
+                    exitsBuilder.append(makeExitsString(tile.getExits(), tiles));
+                }
+
+                tileID++;
+            }
+            // Blank line then "exits".
+            fileWriter.write("\nexits\n");
+
+
+        } finally {
+            fileWriter.close();
+        }
+    }
+
+    private static String makeExitsString(Map<String, Tile> exits,
+                                          List<Tile> tiles) {
+        List<String> exitStrings = new ArrayList<>();
+        for (Map.Entry<String, Tile> exit : exits.entrySet()) {
+            exitStrings.add(exit.getKey()+":"+tiles.indexOf(exit.getValue()));
+        }
+        return String.join(",", exitStrings);
+    }
+
+    private static String makeBlockListString(List<Block> blocks) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < blocks.size(); i++) {
+            Block inventoryBlock = blocks.get(i);
+            if (i > 0) {
+                stringBuilder.append(",");
+            }
+            stringBuilder.append(
+                    BlockTypes.fromInstance(inventoryBlock).name());
+        }
+        return stringBuilder.toString();
+    }
+
+    private static void writeCommaJoin(Writer writer, Iterable<?> strings)
+            throws IOException {
+        boolean first = true;
+        for (Object element : strings) {
+            if (!first) {
+                first = false;
+            } else {
+                writer.write(",");
+            }
+            writer.write(element.toString());
+        }
+        writer.write("\n");
     }
 
 }
