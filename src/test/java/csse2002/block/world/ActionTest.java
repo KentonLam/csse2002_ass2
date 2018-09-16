@@ -83,7 +83,13 @@ public class ActionTest
 
         return new WorldMap(tiles.get(0),
                 new Position(0, 0), new Builder("Bob", tiles.get(0), inventory));
+    }
 
+    private static void assertLinesEqual(String message, String expected,
+                                         String actual) {
+        expected = expected.replaceAll("\\n",
+                System.getProperty("line.separator"));
+        assertEquals(message, expected, actual);
     }
 
     @Test
@@ -228,7 +234,7 @@ public class ActionTest
                     + "RANDOM_ACTION\n"
             ), testMap);
         } catch (ActionFormatException e) {}
-        assertEquals(""
+        assertLinesEqual("Output wrong.", ""
                 + "Moved builder north\n"
                 + "Moved builder south\n"
                 + "Moved builder west\n"
