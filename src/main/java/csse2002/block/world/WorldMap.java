@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -137,6 +136,9 @@ public class WorldMap {
 
     /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
+
+    /** Newline for writing to file. */
+    private static final String nl = "\r\n";
 
     /**
      * Constructs a new block world map from a startingTile, position and
@@ -682,29 +684,27 @@ public class WorldMap {
      * @throws IOException if the file cannot be opened or written to.
      * @require filename != null
      */
-    public void saveMap(String filename)
-                 throws IOException {
-        FileWriter fileWriter = new FileWriter(filename);
-        try {
-            fileWriter.write(Integer.toString(startPosition.getX())+"\n");
-            fileWriter.write(Integer.toString(startPosition.getY())+"\n");
-            fileWriter.write(builder.getName()+"\n");
+    public void saveMap(String filename) throws IOException {
+        try (FileWriter fileWriter = new FileWriter(filename)) {
+            fileWriter.write(Integer.toString(startPosition.getX()) + nl);
+            fileWriter.write(Integer.toString(startPosition.getY()) + nl);
+            fileWriter.write(builder.getName() + nl);
             List<Block> inventory = builder.getInventory();
-            fileWriter.write(makeBlockListString(inventory)+"\n");
-            fileWriter.write("\n\n"); // Newline for inventory, then blank line.
+            fileWriter.write(makeBlockListString(inventory) + nl);
+            fileWriter.write(nl); // Newline for inventory, then blank line.
 
             List<Tile> tiles = getTiles();
-            fileWriter.write("total:"+tiles.size()+"\n");
+            fileWriter.write("total:" + tiles.size() + nl);
 
-            StringBuilder exitsBuilder = new StringBuilder("exits\n");
+            StringBuilder exitsBuilder = new StringBuilder("exits" + nl);
 
             int tileID = 0;
             for (Tile tile : tiles) {
                 fileWriter.write(Integer.toString(tileID));
                 if (tile.getBlocks().size() != 0) {
-                    fileWriter.write(" "+ makeBlockListString(tile.getBlocks()));
+                    fileWriter.write(" " + makeBlockListString(tile.getBlocks()));
                 }
-                fileWriter.write("\n");
+                fileWriter.write(nl);
 
                 // We will build the exits string here to append after the tile
                 // section.
@@ -713,15 +713,13 @@ public class WorldMap {
                     exitsBuilder.append(" ");
                     exitsBuilder.append(makeExitsString(tile.getExits(), tiles));
                 }
+                exitsBuilder.append(nl);
 
                 tileID++;
             }
             // Blank line then "exits".
-            fileWriter.write("\nexits\n");
-
-
-        } finally {
-            fileWriter.close();
+            fileWriter.write(nl);
+            fileWriter.write(exitsBuilder.toString());
         }
     }
 
@@ -746,19 +744,4 @@ public class WorldMap {
         }
         return stringBuilder.toString();
     }
-
-    private static void writeCommaJoin(Writer writer, Iterable<?> strings)
-            throws IOException {
-        boolean first = true;
-        for (Object element : strings) {
-            if (!first) {
-                first = false;
-            } else {
-                writer.write(",");
-            }
-            writer.write(element.toString());
-        }
-        writer.write("\n");
-    }
-
 }
