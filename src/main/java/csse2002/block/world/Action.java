@@ -1,10 +1,8 @@
 package csse2002.block.world;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Represents an Action which can be performed on the block world (also
