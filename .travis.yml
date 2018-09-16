@@ -1,6 +1,6 @@
 language: java
 env:
-  - VERSION_TAG=${TRAVIS_TAG}+${TRAVIS_BUILD_NUMBER} SUBMISSION_ZIP=csse2002_ass1_submission_${VERSION_TAG}.zip PIT_ZIP=csse2002_ass1_report_${VERSION_TAG}.zip
+  - VERSION_TAG=${TRAVIS_TAG}+${TRAVIS_BUILD_NUMBER} SUBMISSION_ZIP=csse2002_ass2_submission_${VERSION_TAG}.zip PIT_ZIP=csse2002_ass2_report_${VERSION_TAG}.zip
 install:
  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 before_script:
