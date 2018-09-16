@@ -2,13 +2,18 @@ package csse2002.block.world;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.Before;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,16 +26,64 @@ public class ActionTest
     private Action digAction;
     private Action dropAction;
 
+    private WorldMap testMap;
+
+    // From https://stackoverflow.com/a/1119559
+    private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+    private final PrintStream oldOut = System.out;
+    private final PrintStream oldErr = System.err;
+
     private BufferedReader makeReader(String string) {
         return new BufferedReader(new StringReader(string));
     }
 
     @Before 
-    public void setupActions() {
+    public void setupStreams() {
+        System.setOut(new PrintStream(outStream));
+        System.setErr(new PrintStream(errStream));
+    }
+
+    @Before
+    public void setupActions() throws BlockWorldException {
         moveBuilderAction = new Action(Action.MOVE_BUILDER, "south");
         moveBlockAction = new Action(Action.MOVE_BLOCK, "east");
         digAction = new Action(Action.DIG, "");
         dropAction = new Action(Action.DROP, "1");
+
+        testMap = makeTestMap();
+    }
+
+    @After
+    public void restoreStreams() {
+        System.setOut(oldOut);
+        System.setErr(oldErr);
+    }
+
+    private static WorldMap makeTestMap() throws BlockWorldException {
+        List<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            tiles.add(new Tile());
+        }
+
+        tiles.get(0).addExit("north", tiles.get(1));
+        tiles.get(1).addExit("south", tiles.get(0));
+        tiles.get(0).addExit("west", tiles.get(2));
+        tiles.get(2).addExit("south", tiles.get(3));
+        tiles.get(3).addExit("north", tiles.get(2));
+        tiles.get(3).placeBlock(new WoodBlock());
+        tiles.get(3).placeBlock(new WoodBlock());
+
+        List<Block> inventory = new ArrayList<>();
+        inventory.add(new WoodBlock());
+        inventory.add(new WoodBlock());
+        inventory.add(new SoilBlock());
+        inventory.add(new WoodBlock());
+        inventory.add(new WoodBlock());
+
+        return new WorldMap(tiles.get(0),
+                new Position(0, 0), new Builder("Bob", tiles.get(0), inventory));
+
     }
 
     @Test
@@ -157,5 +210,33 @@ public class ActionTest
         for (String actionString : actionStrings) {
             Action action = Action.loadAction(makeReader(actionString));
         }
+    }
+
+    @Test
+    public void testProcessActions() throws ActionFormatException {
+        try {
+            Action.processActions(makeReader(""
+                    + "MOVE_BUILDER north\n"
+                    + "MOVE_BUILDER south\n"
+                    + "MOVE_BUILDER west\n"
+                    + "DROP 1\n"
+                    + "DROP 3\n"
+                    + "DROP text\n"
+                    + "DIG\n"
+                    + "MOVE_BUILDER south\n"
+                    + "MOVE_BLOCK north\n"
+                    + "RANDOM_ACTION\n"
+            ), testMap);
+        } catch (ActionFormatException e) {}
+        assertEquals(""
+                + "Moved builder north\n"
+                + "Moved builder south\n"
+                + "Moved builder west\n"
+                + "Dropped a block from inventory\n"
+                + "Dropped a block from inventory\n"
+                + "Error: Invalid action\n"
+                + "Top block on current tile removed\n"
+                + "Moved builder south\n"
+                + "Moved block north\n", outStream.toString());
     }
 }
