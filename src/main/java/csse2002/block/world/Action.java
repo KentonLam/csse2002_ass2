@@ -335,9 +335,11 @@ public class Action {
      * @require action != null, map != null
      */
     public static void processAction(Action action, WorldMap map) {
+        boolean success = false;
         try {
             // Offload to helper to avoid excessive nesting.
             unsafeProcessAction(action, map);
+            success = true;
         } catch (ActionFormatException e) {
             System.out.println("Error: Invalid action");
         } catch (NoExitException e) {
@@ -348,6 +350,23 @@ public class Action {
             System.out.println("Too low");
         } catch (InvalidBlockException e) {
             System.out.println("Cannot use that block");
+        }
+
+        if (success) {
+            switch (action.primaryAction) {
+                case DIG:
+                    System.out.println("Top block on current tile removed");
+                    break;
+                case DROP:
+                    System.out.println("Dropped a block from inventory");
+                    break;
+                case MOVE_BUILDER:
+                    System.out.println("Moved builder " + action.secondaryAction);
+                    break;
+                case MOVE_BLOCK:
+                    System.out.println("Moved block " + action.secondaryAction);
+                    break;
+            }
         }
     }
 
