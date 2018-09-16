@@ -1,5 +1,6 @@
 package csse2002.block.world;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,15 @@ public class Action {
 
     /** String representing parameters of the action */
     private final String secondaryAction;
+
+    /** Valid compass direction names. */
+    private static final Set<String> directionNames = new HashSet<>();
+    static {
+        directionNames.add("north");
+        directionNames.add("east");
+        directionNames.add("south");
+        directionNames.add("west");
+    }
 
     /**
      * Create an Action that represents a manipulation of the block world.
@@ -277,7 +287,11 @@ public class Action {
     public static void processActions(java.io.BufferedReader reader,
                                       WorldMap startingMap)
                                throws ActionFormatException {
-        // TODO: Implement processActions(), but do processAction() first.
+        Action action = loadAction(reader);
+        while (action != null) {
+            processAction(action, startingMap);
+            action = loadAction(reader); // Throws AFE for us.
+        }
     }
 
     /**
@@ -322,7 +336,77 @@ public class Action {
      * @require action != null, map != null
      */
     public static void processAction(Action action, WorldMap map) {
-        // TODO: Implement processAction()
+        try {
+            // Offload to helper to avoid excessive nesting.
+            performSingleAction(action, map);
+        } catch (ActionFormatException e) {
+            System.out.println("Error: Invalid action");
+        } catch (NoExitException e) {
+            System.out.println("No exit this way");
+        } catch (TooHighException e) {
+            System.out.println("Too high");
+        } catch (TooLowException e) {
+            System.out.println("Too low");
+        } catch (InvalidBlockException e) {
+            System.out.println("Cannot use that block");
+        }
+    }
+
+    public static void performSingleAction(Action action, WorldMap map)
+            throws NoExitException, TooHighException, TooLowException,
+                   InvalidBlockException, ActionFormatException {
+        int primary = action.primaryAction;
+        String secondary = action.secondaryAction;
+
+        // Validate the actual value of the secondary field.
+        boolean secondaryValueValid = false;
+        switch (primary) {
+            case DIG:
+                secondaryValueValid = secondary.equals("");
+                break;
+            case MOVE_BUILDER:
+            case MOVE_BLOCK:
+                secondaryValueValid = directionNames.contains(secondary);
+                break;
+            case DROP:
+                // Although exceptions are fairly slow, we expect most input
+                // cases would be valid integers and not throw.
+                try {
+                    //noinspection unused
+                    Integer unused = Integer.parseInt(secondary);
+                    secondaryValueValid = true;
+                } catch (NumberFormatException e) {
+                    secondaryValueValid = false;
+                }
+                break;
+            default:
+                // Will reach here if primary is invalid. Throws the same
+                // exception as invalid secondary values.
+        }
+
+        if (!secondaryValueValid) {
+            throw new ActionFormatException();
+        }
+
+        // Perform the actions.
+        Builder builder = map.getBuilder();
+        Tile currentTile = builder.getCurrentTile();
+        switch (primary) {
+            case DIG:
+                builder.digOnCurrentTile();
+                break;
+            case MOVE_BUILDER:
+                // If no such exit exists, .get() will return null and .moveTo()
+                // will throw NoExit as required.
+                builder.moveTo(currentTile.getExits().get(secondary));
+                break;
+            case MOVE_BLOCK:
+                currentTile.moveBlock(secondary);
+                break;
+            case DROP:
+                builder.dropFromInventory(Integer.parseInt(secondary));
+                break;
+        }
     }
 
 }
