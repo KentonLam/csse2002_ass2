@@ -199,8 +199,8 @@ public class SparseTileArray {
      * startingTile's adjacent tiles.
      * @param startingTile Tile to start from, cannot be null.
      * @param startingPos Position to start at.
-     * @return true added successfully, false if there are inconsistencies
-     * with the exits' geometry.
+     * @return true if all tiles were added successfully, false if there were
+     * inconsistencies with the exits' geometry.
      */
     private boolean breadthFirstAddLinkedTiles(Tile startingTile,
                                                Position startingPos) {
