@@ -3,8 +3,8 @@ package csse2002.block.world;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -136,9 +136,6 @@ public class WorldMap {
 
     /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
-
-    /** Newline for writing to file. */
-    private static final String nl = "\r\n";
 
     /**
      * Constructs a new block world map from a startingTile, position and
@@ -685,26 +682,28 @@ public class WorldMap {
      * @require filename != null
      */
     public void saveMap(String filename) throws IOException {
-        try (FileWriter fileWriter = new FileWriter(filename)) {
-            fileWriter.write(Integer.toString(startPosition.getX()) + nl);
-            fileWriter.write(Integer.toString(startPosition.getY()) + nl);
-            fileWriter.write(builder.getName() + nl);
+        try (PrintWriter file = new PrintWriter(filename)) {
+            file.println(Integer.toString(startPosition.getX()));
+            file.println(Integer.toString(startPosition.getY()));
+            file.println(builder.getName());
+
             List<Block> inventory = builder.getInventory();
-            fileWriter.write(makeBlockListString(inventory) + nl);
-            fileWriter.write(nl); // Newline for inventory, then blank line.
+            file.println(makeBlockListString(inventory));
+            file.println(); // Blank line.
 
             List<Tile> tiles = getTiles();
-            fileWriter.write("total:" + tiles.size() + nl);
+            file.println("total:" + tiles.size());
 
-            StringBuilder exitsBuilder = new StringBuilder("exits" + nl);
+            String newline = System.getProperty("line.separator");
+            StringBuilder exitsBuilder = new StringBuilder("exits"+newline);
 
             int tileID = 0;
             for (Tile tile : tiles) {
-                fileWriter.write(Integer.toString(tileID));
+                file.print(Integer.toString(tileID));
                 if (tile.getBlocks().size() != 0) {
-                    fileWriter.write(" " + makeBlockListString(tile.getBlocks()));
+                    file.print(" " + makeBlockListString(tile.getBlocks()));
                 }
-                fileWriter.write(nl);
+                file.println();
 
                 // We will build the exits string here to append after the tile
                 // section.
@@ -713,13 +712,13 @@ public class WorldMap {
                     exitsBuilder.append(" ");
                     exitsBuilder.append(makeExitsString(tile.getExits(), tiles));
                 }
-                exitsBuilder.append(nl);
+                exitsBuilder.append(newline);
 
                 tileID++;
             }
             // Blank line then "exits".
-            fileWriter.write(nl);
-            fileWriter.write(exitsBuilder.toString());
+            file.println();
+            file.print(exitsBuilder.toString());
         }
     }
 
