@@ -336,7 +336,7 @@ public class Action {
     public static void processAction(Action action, WorldMap map) {
         try {
             // Offload to helper to avoid excessive nesting.
-            performSingleAction(action, map);
+            unsafeProcessAction(action, map);
         } catch (ActionFormatException e) {
             System.out.println("Error: Invalid action");
         } catch (NoExitException e) {
@@ -350,7 +350,20 @@ public class Action {
         }
     }
 
-    public static void performSingleAction(Action action, WorldMap map)
+    /**
+     * Executes the given action on the given map.
+     *
+     * Called "unsafe" because it throws exceptions all over the place.
+     *
+     * @param action Action to perform.
+     * @param map Map to perform action on.
+     * @throws NoExitException if the action resulted in this exception.
+     * @throws TooHighException if the action resulted in this exception.
+     * @throws TooLowException if the action resulted in this exception.
+     * @throws InvalidBlockException if the action resulted in this exception.
+     * @throws ActionFormatException action is invalid or has invalid secondary.
+     */
+    public static void unsafeProcessAction(Action action, WorldMap map)
             throws NoExitException, TooHighException, TooLowException,
                    InvalidBlockException, ActionFormatException {
         int primary = action.primaryAction;
