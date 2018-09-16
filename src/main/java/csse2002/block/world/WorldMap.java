@@ -696,7 +696,6 @@ public class WorldMap {
             List<Tile> tiles = getTiles();
             file.println("total:" + tiles.size());
 
-            String newline = System.getProperty("line.separator");
             // We use this instead of StringBuilder for the easy print/println
             // to handle \r\n vs \n.
             // We need a StringWriter so we can retrieve the final string.
@@ -717,13 +716,13 @@ public class WorldMap {
                 // section.
                 exits.print(Integer.toString(tileID));
                 if (tile.getExits().size() != 0) {
-                    exits.print(" "+ makeExitsString(tile.getExits(), tiles));
+                    exits.print(" " + makeExitsString(tile.getExits(), tiles));
                 }
                 exits.println();
 
                 tileID++;
             }
-            // Blank line then "exits".
+            // Blank line then exits section.
             file.println();
             file.print(exitsWriter.toString());
         }
