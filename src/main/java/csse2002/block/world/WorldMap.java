@@ -314,7 +314,7 @@ public class WorldMap {
     }
 
     /**
-     * Ensures the reader is at the end of the file, otherwise throws EOF.
+     * Ensures the reader is at the end of the file, otherwise throws WMFE.
      * @param reader Reader.
      * @throws WorldMapFormatException Reader is not at EOF.
      */
@@ -474,8 +474,8 @@ public class WorldMap {
 
     /**
      * Parses the tile section of the given reader. startingTile must be given
-     * and must have no blocks. It is assumed that this tile is the builder's
-     * starting tile.
+     * and must have no blocks. This will be used as tile ID 0. It is assumed
+     * that this tile is the builder's starting tile.
      * @param reader Reader.
      * @param startingTile The starting tile with no blocks on it.
      * @return List of tiles, list index corresponds to the ID as from the file.
@@ -659,27 +659,11 @@ public class WorldMap {
     /**
      * Saves the given WorldMap to a file specified by the filename. 
      * See the WorldMap(filename) constructor for the format of the map. 
-     * The Tile IDs need to relate to the ordering of tiles returned by getTiles()
-     * i.e. tile 0 is getTiles().get(0) 
-     * The function should do the following:
-     * <ol>
-     * <li> Open the filename and write a map in the format
-     *     given in the WorldMap constructor. </li>
-     * <li> Write the current builder's (given by getBuilder()) name
-     *     and inventory.</li>
-     * <li> Write the starting position (given by getStartPosition())
-     *     </li>
-     * <li> Write the number of tiles </li>
-     * <li> Write the index, and then each tile as given by
-     *     getTiles() (in the same order). </li>
-     * <li> Write each tiles exits, as given by
-     *     getTiles().get(id).getExits() </li>
-     * <li> Throw an IOException if the file cannot be opened for
-     *     writing, or if writing fails. </li>
-     * </ol>
-     * 
-     * Hint: call getTiles()
-     * @param filename the filename to be written to
+     *
+     * <p>The tile IDs are exactly the index of each tile in {@link #getTiles()}.
+     * Only north, east, south and west exits are written.</p>
+     *
+     * @param filename the filename to be written to.
      * @throws IOException if the file cannot be opened or written to.
      * @require filename != null
      */
