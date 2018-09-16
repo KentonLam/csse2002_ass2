@@ -1,5 +1,6 @@
 package csse2002.block.world;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -121,7 +122,7 @@ public class Action {
      *                                the action cannot be created
      * @require reader != null
      */
-    public static Action loadAction(java.io.BufferedReader reader)
+    public static Action loadAction(BufferedReader reader)
                              throws ActionFormatException {
         String line;
         try {
@@ -282,7 +283,7 @@ public class Action {
      *   ActionFormatException
      * @require reader != null, startingMap != null
      */
-    public static void processActions(java.io.BufferedReader reader,
+    public static void processActions(BufferedReader reader,
                                       WorldMap startingMap)
                                throws ActionFormatException {
         Action action = loadAction(reader);
