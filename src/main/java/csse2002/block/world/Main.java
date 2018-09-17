@@ -58,14 +58,14 @@ public class Main {
 
         try {
             exitCode = 2;
-            WorldMap map = new WorldMap(args[1]);
+            WorldMap map = new WorldMap(args[0]);
 
             exitCode = 3;
             Reader internalReader;
-            if (args[2].equals("System.in")) {
+            if (args[1].equals("System.in")) {
                 internalReader = new InputStreamReader(System.in);
             } else {
-                internalReader = new FileReader(args[2]);
+                internalReader = new FileReader(args[1]);
             }
             BufferedReader reader = new BufferedReader(internalReader);
 
