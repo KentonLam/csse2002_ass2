@@ -1,5 +1,11 @@
 package csse2002.block.world;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 /**
  * Handles top-level interaction with performing actions on a WorldMap
  */
@@ -47,7 +53,38 @@ public class Main {
      * @param args the input arguments to the program
      */
     public static void main(String[] args) {
-        System.out.println("Main executed.");
-    }
+        if (args.length != 3) {
+            System.err.println("Usage: program inputMap actions outputMap");
+            System.exit(1);
+        }
 
+        // Exit code if the code throws at each point.
+        int exitCode = -1;
+
+        try {
+            exitCode = 2;
+            WorldMap map = new WorldMap(args[1]);
+
+            exitCode = 3;
+            Reader internalReader;
+            if (args[2].equals("System.in")) {
+                internalReader = new InputStreamReader(System.in);
+            } else {
+                internalReader = new FileReader(args[2]);
+            }
+            BufferedReader reader = new BufferedReader(internalReader);
+
+            exitCode = 4;
+            Action.processActions(reader, map);
+
+            exitCode = 5;
+            map.saveMap(args[2]);
+
+        } catch (BlockWorldException | ActionFormatException
+                | IOException e) {
+            // Print and exit with the appropriate exit code.
+            System.err.println(e);
+            System.exit(exitCode);
+        }
+    }
 }
