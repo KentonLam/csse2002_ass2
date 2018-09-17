@@ -293,10 +293,10 @@ public class Action {
     public static void processActions(BufferedReader reader,
                                       WorldMap startingMap)
                                throws ActionFormatException {
-        Action action = loadAction(reader);
-        while (action != null) {
+        Action action;
+        // Inline variable setting. loadAction throws AFE for us.
+        while ((action = loadAction(reader)) != null) {
             processAction(action, startingMap);
-            action = loadAction(reader); // Throws AFE for us.
         }
     }
 
