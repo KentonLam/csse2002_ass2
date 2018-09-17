@@ -227,7 +227,7 @@ public class ActionTest
     }
 
     @Test
-    public void testProcessActions() throws ActionFormatException {
+    public void testProcessActionsFromJavaDoc() throws ActionFormatException {
         try {
             Action.processActions(makeReader(""
                     + "MOVE_BUILDER north\n"
@@ -241,6 +241,7 @@ public class ActionTest
                     + "MOVE_BLOCK north\n"
                     + "RANDOM_ACTION\n"
             ), testMap);
+            fail("ActionFormatException not thrown.");
         } catch (ActionFormatException e) {}
         assertSystemOut("Output wrong.", ""
                 + "Moved builder north\n"
