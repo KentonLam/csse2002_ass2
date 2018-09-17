@@ -7,14 +7,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 /**
- * Handles top-level interaction with performing actions on a WorldMap
+ * Handles top-level interaction of performing actions on a world map.
  */
 public class Main {
-
-    /**
-     *
-     */
-    public Main() {}
 
     /**
      * The entry point of the application.

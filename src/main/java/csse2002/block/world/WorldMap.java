@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A class to store a world map
+ * Map for the block world. Manages the builder and tiles of the map.
  */
 public class WorldMap {
 
@@ -138,7 +138,7 @@ public class WorldMap {
     /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
 
-    /** Valid compass direction names. */
+    /** Valid compass direction names, unsorted. */
     private static final Set<String> directionNames = new HashSet<>();
     static {
         directionNames.add("north");
@@ -159,10 +159,9 @@ public class WorldMap {
      *          position).
      * @require startingTile != null, startPosition != null, builder != null
      */
-    public WorldMap(Tile startingTile,
-                    Position startPosition,
-                    Builder builder)
+    public WorldMap(Tile startingTile, Position startPosition, Builder builder)
              throws WorldMapInconsistentException {
+        // Initialise the world map.
         sparseArray.addLinkedTiles(
                 startingTile, startPosition.getX(), startPosition.getY());
         this.startPosition = startPosition;
@@ -712,6 +711,13 @@ public class WorldMap {
         }
     }
 
+    /**
+     * Makes a string of the north, east, south and west exits of the given
+     * tile.
+     * @param exits Available exits.
+     * @param tiles List of tiles, used to get tile IDs.
+     * @return Comma-separated string describing exits.
+     */
     private static String makeExitsString(Map<String, Tile> exits,
                                           List<Tile> tiles) {
         List<String> exitStrings = new ArrayList<>();
@@ -728,6 +734,12 @@ public class WorldMap {
         return String.join(",", exitStrings);
     }
 
+    /**
+     * Converts the given list of block instances to a comma-separated string
+     * of their types.
+     * @param blocks Block list.
+     * @return Comma-separated string.
+     */
     private static String makeBlockListString(List<Block> blocks) {
         List<String> blocksList = new ArrayList<>();
         for (int i = 0; i < blocks.size(); i++) {

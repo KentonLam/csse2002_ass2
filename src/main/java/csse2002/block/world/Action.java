@@ -6,13 +6,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents an Action which can be performed on the block world (also
- * called world map). 
- * 
+ * Represents an Action which can be performed on the world map.
+ *
  * An action is something that a builder can do on a tile in the block world.
- * The actions include, moving the builder in a direction, moving a block in
- * a direction, digging on the current tile the builder is standing on and
- * dropping an item from a builder's inventory.
+ * The actions include moving the builder in a direction, moving a block in
+ * a direction, digging on the current tile and placing a block from the
+ * builder's inventory.
  */
 
 public class Action {
@@ -130,7 +129,7 @@ public class Action {
         } catch (IOException e) {
             throw new ActionFormatException();
         }
-
+        // Ensure input is valid for loadActionFromString.
         if (line == null) {
             return null;
         } else {
@@ -138,6 +137,14 @@ public class Action {
         }
     }
 
+    /**
+     * Loads a single action given by actionString.
+     * @param actionString action string, non-null.
+     * @return loaded action.
+     * @throws ActionFormatException if primary action is not valid, secondary
+     * exists for DIG or secondary doesn't exist for MOVE_BUILDER, MOVE_BLOCK
+     * or DROP.
+     */
     private static Action loadActionFromString(String actionString)
             throws ActionFormatException {
         String[] split = actionString.split(" ", -1);
@@ -353,21 +360,21 @@ public class Action {
             System.out.println("Cannot use that block");
         }
 
-        if (success) {
-            switch (action.primaryAction) {
-                case DIG:
-                    System.out.println("Top block on current tile removed");
-                    break;
-                case DROP:
-                    System.out.println("Dropped a block from inventory");
-                    break;
-                case MOVE_BUILDER:
-                    System.out.println("Moved builder " + action.secondaryAction);
-                    break;
-                case MOVE_BLOCK:
-                    System.out.println("Moved block " + action.secondaryAction);
-                    break;
-            }
+        switch (success ? action.primaryAction : -1) {
+            case -1: // Unsuccessful, don't print success message.
+                break;
+            case DIG:
+                System.out.println("Top block on current tile removed");
+                break;
+            case DROP:
+                System.out.println("Dropped a block from inventory");
+                break;
+            case MOVE_BUILDER:
+                System.out.println("Moved builder " + action.secondaryAction);
+                break;
+            case MOVE_BLOCK:
+                System.out.println("Moved block " + action.secondaryAction);
+                break;
         }
     }
 
@@ -382,7 +389,7 @@ public class Action {
      * @throws TooHighException if the action resulted in this exception.
      * @throws TooLowException if the action resulted in this exception.
      * @throws InvalidBlockException if the action resulted in this exception.
-     * @throws ActionFormatException action is invalid or has invalid secondary.
+     * @throws ActionFormatException action is invalid (e.g. invalid secondary).
      */
     private static void unsafeProcessAction(Action action, WorldMap map)
             throws NoExitException, TooHighException, TooLowException,

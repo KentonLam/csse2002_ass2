@@ -6,12 +6,12 @@ package csse2002.block.world;
 public class WorldMapFormatException extends BlockWorldException {
 
     /**
-     *
+     * New {@link WorldMapFormatException} with no message.
      */
     public WorldMapFormatException() {}
 
     /**
-     *
+     * New {@link WorldMapFormatException} with given message.
      */
     public WorldMapFormatException(String message) {}
 

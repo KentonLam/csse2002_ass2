@@ -3,8 +3,7 @@ package csse2002.block.world;
 import java.util.Objects;
 
 /**
- * Represents the position of a Tile
- * in the SparseTileArray
+ * Represents a two-dimensional position on the world map.
  */
 public class Position implements Comparable<Position> {
 
@@ -15,8 +14,8 @@ public class Position implements Comparable<Position> {
 
     /**
      * Construct a position for (x, y)
-     * @param x the x coordinate
-     * @param y the y coordinate
+     * @param x the x coordinate.
+     * @param y the y coordinate.
      */
     public Position(int x, int y) {
         this.x = x;
@@ -42,9 +41,10 @@ public class Position implements Comparable<Position> {
     /**
      * Indicates whether some other object is "equal to" this one.
      * (see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
-     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>) 
-     * Two Positions are equal if getX() == other.getX() &amp;&amp;
-     * getY() == other.getY()
+     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
+     *
+     * Two objects are equal if and only if both their x and y parts are equal.
+     *
      * @param obj the object to compare to
      * @return true if obj is an instance of
      *  Position and if obj.x == x and obj.y == y.
@@ -67,12 +67,13 @@ public class Position implements Comparable<Position> {
      */
     @Override
     public int hashCode() {
+        // Computes a valid hash of the two variables.
         return Objects.hash(x, y);
     }
 
     /**
      * Compare this position to another position. 
-     * return
+     * Return
      * <ul>
      * <li> -1 if getX() &lt; other.getX() </li>
      * <li> -1 if getX() == other.getX() and getY() &lt; other.getY() </li>
@@ -84,21 +85,23 @@ public class Position implements Comparable<Position> {
      * @return -1, 0, or 1 depending on conditions above
      */
     public int compareTo(Position other) {
-        if (x != other.getX()) {
-            return Integer.signum(x - other.getX());
+        // Compare x directions first.
+        if (x != other.x) {
+            // This results in the correct values. Proof is trivial.
+            return Integer.signum(x - other.x);
         }
         // At this point, we know the x components are equal, so the result
         // depends only on the y components.
-        return Integer.signum(y - other.getY());
+        return Integer.signum(y - other.y);
     }
 
     /**
      * Convert this position to a string. 
-     * String should be "(&lt;x&gt;, &lt;y&gt;)" where
+     * String is of the format "(&lt;x&gt;, &lt;y&gt;)" where
      * &lt;x&gt; is the value returned by getX() and
-     * &lt;y&gt; is the value returned by getY(). 
-     * Note the space following the comma.
-     * @return a string representation of the position "(<x>, <y>)"
+     * &lt;y&gt; is the value returned by getY().
+     *
+     * @return a string representation of the position, "(<x>, <y>)".
      */
     @Override
     public String toString() {
