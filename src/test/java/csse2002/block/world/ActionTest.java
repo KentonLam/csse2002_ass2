@@ -348,7 +348,7 @@ public class ActionTest
                 blankMapStartingTile.getTopBlock());
         assertFalse("Block still in inventory.",
                 blankMap.getBuilder().getInventory().contains(theBlock));
-        assertSystemOut("Dropped a block from the inventory\n");
+        assertSystemOut("Dropped a block from inventory\n");
         assertSystemErr("");
     }
 
