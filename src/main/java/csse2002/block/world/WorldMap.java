@@ -689,17 +689,17 @@ public class WorldMap {
 
             int tileID = 0;
             for (Tile tile : tiles) {
-                file.print(Integer.toString(tileID));
+                file.print(Integer.toString(tileID) + " ");
                 if (tile.getBlocks().size() != 0) {
-                    file.print(" " + makeBlockListString(tile.getBlocks()));
+                    file.print(makeBlockListString(tile.getBlocks()));
                 }
                 file.println();
 
                 // We will build the exits string here to append after the tile
                 // section.
-                exits.print(Integer.toString(tileID));
+                exits.print(Integer.toString(tileID) + " ");
                 if (tile.getExits().size() != 0) {
-                    exits.print(" " + makeExitsString(tile.getExits(), tiles));
+                    exits.print(makeExitsString(tile.getExits(), tiles));
                 }
                 exits.println();
 
