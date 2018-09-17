@@ -92,6 +92,14 @@ public class ActionTest
         assertEquals(message, expected, actual);
     }
 
+    private void assertSystemOut(String message, String expected) {
+        assertLinesEqual(message, expected, outStream.toString());
+    }
+
+    private void assertSystemErr(String message, String expected) {
+        assertLinesEqual(message, expected, errStream.toString());
+    }
+
     @Test
     public void testConstructorDoesntThrow() {
         Map<Integer, String> actionInputs = new HashMap<>();
@@ -234,7 +242,7 @@ public class ActionTest
                     + "RANDOM_ACTION\n"
             ), testMap);
         } catch (ActionFormatException e) {}
-        assertLinesEqual("Output wrong.", ""
+        assertSystemOut("Output wrong.", ""
                 + "Moved builder north\n"
                 + "Moved builder south\n"
                 + "Moved builder west\n"
@@ -243,6 +251,6 @@ public class ActionTest
                 + "Error: Invalid action\n"
                 + "Top block on current tile removed\n"
                 + "Moved builder south\n"
-                + "Moved block north\n", outStream.toString());
+                + "Moved block north\n");
     }
 }
