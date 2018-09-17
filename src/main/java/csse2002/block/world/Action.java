@@ -338,6 +338,7 @@ public class Action {
         boolean success = false;
         try {
             // Offload to helper to avoid excessive nesting.
+            // This function only handles printing to the console.
             unsafeProcessAction(action, map);
             success = true;
         } catch (ActionFormatException e) {
