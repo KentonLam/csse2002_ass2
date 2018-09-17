@@ -96,8 +96,16 @@ public class ActionTest
         assertLinesEqual(message, expected, outStream.toString());
     }
 
+    private void assertSystemOut(String expected) {
+        assertSystemOut("Incorrect System.out output.", expected);
+    }
+
     private void assertSystemErr(String message, String expected) {
         assertLinesEqual(message, expected, errStream.toString());
+    }
+
+    private void assertSystemErr(String expected) {
+        assertSystemErr("Incorrect System.err output.", expected);
     }
 
     @Test
@@ -243,7 +251,7 @@ public class ActionTest
             ), testMap);
             fail("ActionFormatException not thrown.");
         } catch (ActionFormatException e) {}
-        assertSystemOut("Output wrong.", ""
+        assertSystemOut(""
                 + "Moved builder north\n"
                 + "Moved builder south\n"
                 + "Moved builder west\n"
@@ -253,5 +261,13 @@ public class ActionTest
                 + "Top block on current tile removed\n"
                 + "Moved builder south\n"
                 + "Moved block north\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionsTooHigh() throws ActionFormatException {
+        Action.processAction(new Action(Action.DROP, "2"), testMap);
+        assertSystemOut("Too high\n");
+        assertSystemErr("");
     }
 }
