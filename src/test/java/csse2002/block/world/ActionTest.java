@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,15 @@ public class ActionTest
     private Action dropAction;
 
     private WorldMap testMap;
+
+    /**
+     * Contains a single tile with no exits and only the default 3 blocks.
+     * The builder has a ground block (grass) in slot 0 and normal block (wood)
+     * in slot 1.
+     */
+    private WorldMap blankMap;
+
+    private Tile blankMapStartingTile;
 
     // From https://stackoverflow.com/a/1119559
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -52,6 +62,11 @@ public class ActionTest
         dropAction = new Action(Action.DROP, "1");
 
         testMap = makeTestMap();
+
+        blankMapStartingTile = new Tile();
+        blankMap = new WorldMap(blankMapStartingTile, new Position(0, 0),
+                new Builder("Bob2", blankMapStartingTile,
+                        Arrays.asList(new SoilBlock(), new WoodBlock())));
     }
 
     @After
@@ -181,7 +196,7 @@ public class ActionTest
         try {
             reader.readLine();
         } catch (IOException e) {
-            throw new AssertionError("IOException in StringReader.");
+            fail("IOException in StringReader.");
         }
         assertNull("Loading from EOF should be null.",
                 Action.loadAction(reader));
@@ -265,9 +280,105 @@ public class ActionTest
     }
 
     @Test
-    public void testProcessActionsTooHigh() throws ActionFormatException {
-        Action.processAction(new Action(Action.DROP, "2"), testMap);
+    public void testProcessActionTooHigh() {
+        Action.processAction(new Action(Action.DROP, "0"), blankMap);
         assertSystemOut("Too high\n");
         assertSystemErr("");
+    }
+    
+    @Test
+    public void testProcessActionNoExit() {
+        Action.processAction(new Action(Action.MOVE_BUILDER, "east"), blankMap);
+        assertSystemOut("No exit this way\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionsTooLow() throws ActionFormatException {
+        // Get rid of default starting blocks.
+        try {
+            blankMapStartingTile.removeTopBlock();
+            blankMapStartingTile.removeTopBlock();
+            blankMapStartingTile.removeTopBlock();
+        } catch (TooLowException e) {
+            fail("TooLow while removing default blocks.");
+        }
+
+        Action.processAction(new Action(Action.DIG, ""), blankMap);
+        assertSystemOut("Too low\n");
+        assertSystemErr("");
+    }
+    
+    @Test
+    public void testProcessActionInvalidBlock()
+            throws ActionFormatException, TooHighException, InvalidBlockException {
+        // Add undiggable block.
+        blankMapStartingTile.placeBlock(new StoneBlock());
+
+        Action.processAction(new Action(Action.DIG, ""), blankMap);
+        assertSystemOut("Cannot use that block\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionDig() {
+        Action.processAction(new Action(Action.DIG, ""), blankMap);
+        assertEquals("Block not dug.",
+                2, blankMapStartingTile.getBlocks().size());
+        assertSystemOut("Top block on current tile removed\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionMoveBuilder() {
+        Action.processAction(new Action(Action.MOVE_BUILDER, "north"), testMap);
+        assertEquals("Moved to wrong block.",
+                testMap.getTiles().get(1),
+                testMap.getBuilder().getCurrentTile());
+        assertSystemOut("Moved builder north\n");
+        assertSystemErr("");
+    }
+    
+    @Test
+    public void testProcessActionDrop() throws TooLowException {
+        Block theBlock = blankMap.getBuilder().getInventory().get(1);
+        Action.processAction(new Action(Action.DROP, "1"), blankMap);
+        assertEquals("Placed wrong block.",
+                theBlock,
+                blankMapStartingTile.getTopBlock());
+        assertFalse("Block still in inventory.",
+                blankMap.getBuilder().getInventory().contains(theBlock));
+        assertSystemOut("Dropped a block from the inventory\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionMoveBlock() throws BlockWorldException {
+        Block topBlock = new WoodBlock();
+        Tile northTile = new Tile();
+        blankMapStartingTile.placeBlock(topBlock);
+        blankMapStartingTile.addExit("north", northTile);
+
+        Action.processAction(new Action(Action.MOVE_BLOCK, "north"), blankMap);
+
+        assertNotEquals("Block still on old tile.",
+                topBlock, blankMapStartingTile.getTopBlock());
+        assertEquals("Block moved to other tile.",
+                topBlock, northTile.getTopBlock());
+        assertSystemOut("Moved block north\n");
+        assertSystemErr("");
+    }
+
+    @Test
+    public void testProcessActionMoveBuilderExitExistsButNotCompass()
+            throws NoExitException {
+        blankMapStartingTile.addExit("northeast", new Tile());
+
+        Action.processAction(
+                new Action(Action.MOVE_BUILDER, "northeast"), blankMap);
+        assertEquals("Builder shouldn't move.",
+                blankMapStartingTile,
+                blankMap.getBuilder().getCurrentTile());
+        assertSystemOut("Error: Invalid action\n");
     }
 }
