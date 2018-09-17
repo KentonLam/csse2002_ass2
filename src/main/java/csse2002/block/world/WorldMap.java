@@ -139,7 +139,7 @@ public class WorldMap {
     private final SparseTileArray sparseArray = new SparseTileArray();
 
     /** Valid compass direction names, unsorted. */
-    private static final Set<String> directionNames = new HashSet<>();
+    private static final List<String> directionNames = new ArrayList<>();
     static {
         directionNames.add("north");
         directionNames.add("east");
@@ -721,15 +721,16 @@ public class WorldMap {
     private static String makeExitsString(Map<String, Tile> exits,
                                           List<Tile> tiles) {
         List<String> exitStrings = new ArrayList<>();
-        for (Map.Entry<String, Tile> exit : exits.entrySet()) {
-            if (!directionNames.contains(exit.getKey())) {
-                continue; // Ignore exits which aren't N, E, S, W.
+        for (String direction : directionNames) {
+            Tile tile = exits.get(direction);
+            if (tile == null) {
+                continue; // Null indicates exit doesn't exist.
             }
-            int tileID = tiles.indexOf(exit.getValue());
+            int tileID = tiles.indexOf(tile);
             if (tileID == -1) {
                 throw new AssertionError("Exit tile not in tiles.");
             }
-            exitStrings.add(exit.getKey()+":"+tileID);
+            exitStrings.add(direction+":"+tileID);
         }
         return String.join(",", exitStrings);
     }
