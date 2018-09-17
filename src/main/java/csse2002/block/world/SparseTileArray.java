@@ -67,10 +67,10 @@ public class SparseTileArray {
     }
 
     /** Set of inserted tiles, in BFS order relative to a starting tile. */
-    private List<Tile> insertedTiles = new ArrayList<>();
+    private final List<Tile> insertedTiles = new ArrayList<>();
 
     /** Mapping of position to tiles. */
-    private Map<Position, Tile> positionToTile = new HashMap<>();
+    private final Map<Position, Tile> positionToTile = new HashMap<>();
 
     /**
      * Constructor which initialises an empty SparseTileArray.
