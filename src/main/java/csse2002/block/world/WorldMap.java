@@ -444,8 +444,8 @@ public class WorldMap {
 
     /**
      * Parses a line of the form "N [rest]", ensuring N is an integer and
-     * [rest] contains no spaces. If [rest] is empty, the preceding space can
-     * be omitted.
+     * [rest] contains no spaces. Even if [rest] is empty, the preceding space
+     * cannot be omitted.
      *
      * @param line String to parse.
      * @return Pair of the integer and the rest of the string.
@@ -453,22 +453,11 @@ public class WorldMap {
     private static Pair<Integer, String> parseNumberedRow(String line)
             throws WorldMapFormatException {
         String[] split = line.split(" ", -1);
-        // Throw if there is more than one space in the string.
-        if (split.length > 2) {
+        // Throw if there is not exactly one space in the string.
+        if (split.length != 2) {
             throw new WorldMapFormatException();
         }
-        // Numeric part.
-        int num = safeParseInt(split[0]);
-
-        // If there is no string part, use an empty string to avoid nulls.
-        String rest;
-        if (split.length < 2) {
-            rest = "";
-        } else {
-            rest = split[1];
-        }
-
-        return new Pair<>(num, rest);
+        return new Pair<>(safeParseInt(split[0]), split[1]);
     }
 
     /**
