@@ -176,8 +176,6 @@ public class SparseTileArray {
      *
      * @param startingTile Tile to start from, cannot be null.
      * @param startingPos Position to start at.
-     * @return true if all tiles were added successfully, false if there are
-     * inconsistencies with the exits' geometry.
      * @throws WorldMapInconsistentException Map is geometrically inconsistent.
      */
     private void unsafeBreadthFirstAddTiles(Tile startingTile,
