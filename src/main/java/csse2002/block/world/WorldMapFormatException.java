@@ -13,6 +13,8 @@ public class WorldMapFormatException extends BlockWorldException {
     /**
      * New {@link WorldMapFormatException} with given message.
      */
-    public WorldMapFormatException(String message) {}
+    public WorldMapFormatException(String message) {
+        super(message);
+    }
 
 }
