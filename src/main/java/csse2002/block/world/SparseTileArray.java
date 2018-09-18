@@ -144,11 +144,12 @@ public class SparseTileArray {
         // We offload the actual computations to a helper function so we can
         // cleanup and throw here in one place.
         resetInternalState();
-        boolean success = breadthFirstAddLinkedTiles(
-                startingTile, new Position(startingX, startingY));
-        if (!success) {
+        try {
+            breadthFirstAddLinkedTiles(
+                    startingTile, new Position(startingX, startingY));
+        } catch (WorldMapInconsistentException e) {
             resetInternalState();
-            throw new WorldMapInconsistentException();
+            throw e;
         }
     }
 
@@ -174,9 +175,11 @@ public class SparseTileArray {
      * @param startingPos Position to start at.
      * @return true if all tiles were added successfully, false if there are
      * inconsistencies with the exits' geometry.
+     * @throws WorldMapInconsistentException Map is geometrically inconsistent.
      */
-    private boolean breadthFirstAddLinkedTiles(Tile startingTile,
-                                               Position startingPos) {
+    private void breadthFirstAddLinkedTiles(Tile startingTile,
+                                               Position startingPos)
+            throws WorldMapInconsistentException {
         // Initialise queue with starting tile.
         Queue<Map.Entry<Tile, Position>> tilesToCheck = new LinkedList<>();
         tilesToCheck.add(makeEntry(startingTile, startingPos));
@@ -198,7 +201,8 @@ public class SparseTileArray {
                 } else {
                     // Inconsistent map. This tile has already been placed
                     // elsewhere.
-                    return false;
+                    throw new WorldMapInconsistentException(
+                            "Exits lead to one tile in multiple positions.");
                 }
             }
 
@@ -212,7 +216,8 @@ public class SparseTileArray {
                 // This also handles the case where a reverse exit maps to a
                 // different tile. The earlier tile would already have been
                 // placed in the position, leading to this case.
-                return false;
+                throw new WorldMapInconsistentException(
+                        "Exits lead to multiple tiles in one position.");
             }
 
             // Add the tile to the grid.
@@ -234,6 +239,5 @@ public class SparseTileArray {
                 }
             }
         }
-        return true;
     }
 }
