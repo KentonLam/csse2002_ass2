@@ -127,7 +127,7 @@ public class Action {
         try {
             line = reader.readLine();
         } catch (IOException e) {
-            throw new ActionFormatException();
+            throw new ActionFormatException("IOException occurred.");
         }
         // Ensure input is valid for loadActionFromString.
         if (line == null) {
@@ -150,7 +150,7 @@ public class Action {
         String[] split = actionString.split(" ", -1);
         if (split.length > 2) {
             // Throw if 2 or more spaces are present.
-            throw new ActionFormatException();
+            throw new ActionFormatException("Incorrect number of spaces.");
         }
 
         // Detect what type of primary action it is.
@@ -170,7 +170,7 @@ public class Action {
                 primaryID = DROP;
                 break;
             default:
-                throw new ActionFormatException();
+                throw new ActionFormatException("Invalid primary action.");
         }
 
         // Validate secondary action based on primary type.
@@ -194,11 +194,13 @@ public class Action {
         }
 
         if (!secondaryValid) {
-            throw new ActionFormatException();
+            throw new ActionFormatException("Invalid secondary action.");
         }
         // Sanity check.
         if (secondary == null) {
-            throw new AssertionError("Secondary action is valid but null.");
+            throw new AssertionError(
+                    "Secondary action exists for DIG or doesn't exist for"
+                    +" MOVE_BUILDER, MOVE_BLOCK or DROP.");
         }
 
         // If we reach here, we have a valid primary and secondary.
@@ -424,7 +426,7 @@ public class Action {
         }
 
         if (!secondaryValueValid) {
-            throw new ActionFormatException();
+            throw new ActionFormatException("Secondary action value invalid.");
         }
 
         // Perform the actions.

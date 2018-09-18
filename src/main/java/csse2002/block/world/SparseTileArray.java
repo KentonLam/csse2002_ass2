@@ -141,11 +141,11 @@ public class SparseTileArray {
      */
     public void addLinkedTiles(Tile startingTile, int startingX, int startingY)
             throws WorldMapInconsistentException {
-        // We offload the actual computations to a helper function so we can
-        // cleanup and throw here in one place.
+        // We offload the actual computations to a helper function and
+        // clean before/after it.
         resetInternalState();
         try {
-            breadthFirstAddLinkedTiles(
+            unsafeBreadthFirstAddTiles(
                     startingTile, new Position(startingX, startingY));
         } catch (WorldMapInconsistentException e) {
             resetInternalState();
@@ -171,14 +171,17 @@ public class SparseTileArray {
      * startingTile's adjacent tiles. Return value indicates if adding all
      * linked tiles succeeded.
      *
+     * <b>Important:</b> This method is unsafe; it does not clear the internal
+     * state before executing or on exceptions.
+     *
      * @param startingTile Tile to start from, cannot be null.
      * @param startingPos Position to start at.
      * @return true if all tiles were added successfully, false if there are
      * inconsistencies with the exits' geometry.
      * @throws WorldMapInconsistentException Map is geometrically inconsistent.
      */
-    private void breadthFirstAddLinkedTiles(Tile startingTile,
-                                               Position startingPos)
+    private void unsafeBreadthFirstAddTiles(Tile startingTile,
+                                            Position startingPos)
             throws WorldMapInconsistentException {
         // Initialise queue with starting tile.
         Queue<Map.Entry<Tile, Position>> tilesToCheck = new LinkedList<>();
