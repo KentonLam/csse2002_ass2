@@ -194,13 +194,13 @@ public class Action {
         }
 
         if (!secondaryValid) {
-            throw new ActionFormatException("Invalid secondary action.");
+            throw new ActionFormatException(
+                    "Secondary action exists for DIG or doesn't exist for"
+                    +" MOVE_BUILDER, MOVE_BLOCK or DROP.");
         }
         // Sanity check.
         if (secondary == null) {
-            throw new AssertionError(
-                    "Secondary action exists for DIG or doesn't exist for"
-                    +" MOVE_BUILDER, MOVE_BLOCK or DROP.");
+            throw new AssertionError("Secondary is valid but null.");
         }
 
         // If we reach here, we have a valid primary and secondary.
