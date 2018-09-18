@@ -235,7 +235,7 @@ public class WorldMap {
         } catch (IOException e) {
             // loadWorldMap catches IOException itself, but opening and reading
             // can throw this too...
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("IOException occurred.");
         }
     }
 
@@ -250,7 +250,7 @@ public class WorldMap {
         try {
             return Integer.parseInt(numberString);
         } catch (NumberFormatException e) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Invalid integer.");
         }
     }
 
@@ -266,10 +266,12 @@ public class WorldMap {
         try {
             line = reader.readLine();
         } catch (IOException e) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException(
+                    "IOException while reading file.");
         }
         if (line == null) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException(
+                    "File ended earlier than expected.");
         } else {
             return line;
         }
@@ -323,10 +325,12 @@ public class WorldMap {
         try {
             lastLine = reader.readLine();
         } catch (IOException e) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException(
+                    "IOException while checking for EOF.");
         }
         if (lastLine != null) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException(
+                    "File does not end when required.");
         }
     }
 
@@ -339,7 +343,7 @@ public class WorldMap {
     private static void parseEmptyLine(BufferedReader reader)
             throws WorldMapFormatException {
         if (!safeReadLine(reader).equals("")) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Line is not empty.");
         }
     }
 
@@ -386,7 +390,7 @@ public class WorldMap {
             throw new AssertionError("No blocks but too high was thrown.", e);
         } catch (InvalidBlockException e) {
             // An inventory block is not carryable.
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Inventory block not carryable.");
         }
         return new Pair<>(startPosition, builder);
    }
@@ -418,7 +422,7 @@ public class WorldMap {
 
         String[] fields = string.split(",", -1);
         if (exactlyOneField && fields.length != 1) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Incorrect number of commas.");
         }
 
         Map<String, Integer> outputMap = new HashMap<>();
@@ -435,7 +439,8 @@ public class WorldMap {
                 outputMap.put(matcher.group(1),
                         safeParseInt(matcher.group(2)));
             } else {
-                throw new WorldMapFormatException();
+                throw new WorldMapFormatException(
+                        "Invalid format or duplicated name.");
             }
         }
 
@@ -455,7 +460,7 @@ public class WorldMap {
         String[] split = line.split(" ", -1);
         // Throw if there is not exactly one space in the string.
         if (split.length != 2) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Not exactly one space.");
         }
         return new Pair<>(safeParseInt(split[0]), split[1]);
     }
@@ -476,14 +481,14 @@ public class WorldMap {
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, true);
         if (!totalLineMap.containsKey("total")) {
             // Either it has no or the wrong string label, throw.
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Invalid total line.");
         }
 
         int numLines = totalLineMap.get("total");
         if (numLines < 1) {
             // Require at least one tile. Any less will wreak havoc on the for
             // loop.
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Invalid number of tiles.");
         }
 
         // Mapping of tile ID to that tile's blocks.
@@ -500,7 +505,8 @@ public class WorldMap {
 
             // If num is out of range or already inserted, throw.
             if (num < 0 || num >= numLines || blocksForTiles.containsKey(num)) {
-                throw new WorldMapFormatException();
+                throw new WorldMapFormatException(
+                        "Invalid or duplicated tile ID.");
             }
 
             // Add the list of block instances to the mapping.
@@ -528,7 +534,7 @@ public class WorldMap {
                 throw new AssertionError("Inserting null block.", e);
             } catch (TooHighException e) {
                 // Ground block too high.
-                throw new WorldMapFormatException();
+                throw new WorldMapFormatException("Ground block too high.");
             }
         }
 
@@ -540,7 +546,7 @@ public class WorldMap {
                 // Initialise with the correct blocks.
                 newTile = new Tile(blocksForTiles.get(i));
             } catch (TooHighException e) {
-                throw new WorldMapFormatException();
+                throw new WorldMapFormatException("Ground block too high.");
             }
             tiles.add(newTile);
         }
@@ -566,7 +572,7 @@ public class WorldMap {
             throws WorldMapFormatException {
         // First line of this section must be exactly "exits".
         if (!safeReadLine(reader).equals("exits")) {
-            throw new WorldMapFormatException();
+            throw new WorldMapFormatException("Invalid exits section label.");
         }
 
         // A set of tile IDs we've seen, to ensure no tile has more than one
@@ -584,7 +590,7 @@ public class WorldMap {
             // .add() returns false if the key already existed in the set.
             if (!seenTiles.add(currentTile)) {
                 // Exits for this tile have already been defined.
-                throw new WorldMapFormatException();
+                throw new WorldMapFormatException("Tile ID duplicated in exits.");
             }
 
             // Parses the "north:2,east:1,..." part of the string into a map.
@@ -596,7 +602,8 @@ public class WorldMap {
                         || !directionNames.contains(exit.getKey())) {
                     // The tile ID referred to does not exist or the exit
                     // is invalid.
-                    throw new WorldMapFormatException();
+                    throw new WorldMapFormatException(
+                            "Invalid tile ID or direction name.");
                 }
 
                 try {
