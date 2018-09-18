@@ -78,7 +78,8 @@ public class WorldMap {
                 try {
                     blocks.add(BlockTypes.valueOf(blockType).newInstance());
                 } catch (IllegalArgumentException e) {
-                    throw new WorldMapFormatException("Invalid block type.");
+                    throw new WorldMapFormatException(
+                            "Invalid block type: "+blockType);
                 }
             }
             return blocks;
@@ -235,7 +236,7 @@ public class WorldMap {
         } catch (IOException e) {
             // loadWorldMap catches IOException itself, but opening and reading
             // can throw this too...
-            throw new WorldMapFormatException("IOException occurred.");
+            throw new WorldMapFormatException("IOException occurred: "+e);
         }
     }
 
@@ -250,7 +251,7 @@ public class WorldMap {
         try {
             return Integer.parseInt(numberString);
         } catch (NumberFormatException e) {
-            throw new WorldMapFormatException("Invalid integer.");
+            throw new WorldMapFormatException("Invalid integer: "+numberString);
         }
     }
 
@@ -422,7 +423,8 @@ public class WorldMap {
 
         String[] fields = string.split(",", -1);
         if (exactlyOneField && fields.length != 1) {
-            throw new WorldMapFormatException("Incorrect number of commas.");
+            throw new WorldMapFormatException(
+                    "Incorrect number of commas: "+string);
         }
 
         Map<String, Integer> outputMap = new HashMap<>();
@@ -440,7 +442,7 @@ public class WorldMap {
                         safeParseInt(matcher.group(2)));
             } else {
                 throw new WorldMapFormatException(
-                        "Invalid format or duplicated name.");
+                        "Invalid format or duplicated name: "+field);
             }
         }
 
@@ -460,7 +462,7 @@ public class WorldMap {
         String[] split = line.split(" ", -1);
         // Throw if there is not exactly one space in the string.
         if (split.length != 2) {
-            throw new WorldMapFormatException("Not exactly one space.");
+            throw new WorldMapFormatException("Not exactly one space: "+line);
         }
         return new Pair<>(safeParseInt(split[0]), split[1]);
     }
@@ -481,14 +483,15 @@ public class WorldMap {
         Map<String, Integer> totalLineMap = parseColonStrings(totalLine, true);
         if (!totalLineMap.containsKey("total")) {
             // Either it has no or the wrong string label, throw.
-            throw new WorldMapFormatException("Invalid total line.");
+            throw new WorldMapFormatException("Invalid total line: "+totalLine);
         }
 
         int numLines = totalLineMap.get("total");
         if (numLines < 1) {
             // Require at least one tile. Any less will wreak havoc on the for
             // loop.
-            throw new WorldMapFormatException("Invalid number of tiles.");
+            throw new WorldMapFormatException(
+                    "Invalid number of tiles: "+numLines);
         }
 
         // Mapping of tile ID to that tile's blocks.
@@ -506,7 +509,7 @@ public class WorldMap {
             // If num is out of range or already inserted, throw.
             if (num < 0 || num >= numLines || blocksForTiles.containsKey(num)) {
                 throw new WorldMapFormatException(
-                        "Invalid or duplicated tile ID.");
+                        "Invalid or duplicated tile ID: "+num);
             }
 
             // Add the list of block instances to the mapping.
@@ -590,7 +593,8 @@ public class WorldMap {
             // .add() returns false if the key already existed in the set.
             if (!seenTiles.add(currentTile)) {
                 // Exits for this tile have already been defined.
-                throw new WorldMapFormatException("Tile ID duplicated in exits.");
+                throw new WorldMapFormatException(
+                        "Tile ID duplicated in exits: "+currentTile);
             }
 
             // Parses the "north:2,east:1,..." part of the string into a map.

@@ -170,7 +170,8 @@ public class Action {
                 primaryID = DROP;
                 break;
             default:
-                throw new ActionFormatException("Invalid primary action.");
+                throw new ActionFormatException(
+                        "Invalid primary action: "+primary);
         }
 
         // Validate secondary action based on primary type.
