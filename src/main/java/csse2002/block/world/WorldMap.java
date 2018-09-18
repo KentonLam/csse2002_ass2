@@ -78,7 +78,7 @@ public class WorldMap {
                 try {
                     blocks.add(BlockTypes.valueOf(blockType).newInstance());
                 } catch (IllegalArgumentException e) {
-                    throw new WorldMapFormatException();
+                    throw new WorldMapFormatException("Invalid block type.");
                 }
             }
             return blocks;
