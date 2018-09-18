@@ -1,0 +1,18 @@
+1
+2
+Bob
+wood,wood,wood,soil
+
+total:5
+0 soil,soil,grass,wood
+1 grass,grass,soil
+2 soil,soil,soil,wood
+3 grass,grass,grass,stone
+4 soil,grass,stone
+
+exits
+0 north:1,east:2
+1 south:0,east:3
+2 west:0
+3 west:1,south:4
+4 north:3

@@ -205,4 +205,37 @@ public class WorldMapTest {
         basicMap.saveMap("worldmaps_valid/basicmap_saved.txt");
         WorldMap map = new WorldMap("worldmaps_valid/basicmap_saved.txt");
     }
+
+    @Test
+    public void testLoadSampleMaps() {
+        File[] files = new File("worldmaps_sample").listFiles();
+
+        for (File file : files) {
+            String name = file.getName();
+
+            Class<? extends Exception> expected = null;
+            if (name.startsWith("invalid")) {
+                expected = WorldMapFormatException.class;
+            } else if (name.startsWith("validButInconsistent")) {
+                expected = WorldMapInconsistentException.class;
+            }
+
+            boolean thrown = true;
+            try {
+                WorldMap map = new WorldMap(file.getAbsolutePath());
+                thrown = false;
+            } catch (Exception e) {
+                assertEquals("Incorrect exception thrown.",
+                        expected,
+                        e.getClass());
+            }
+
+            if (!thrown && expected != null) {
+                fail("No exception thrown but "+expected+" was expected.");
+            }
+        }
+    }
+
+
+
 }
