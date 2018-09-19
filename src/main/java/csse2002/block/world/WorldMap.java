@@ -536,8 +536,7 @@ public class WorldMap {
             } catch (InvalidBlockException e) {
                 throw new AssertionError("Inserting null block.", e);
             } catch (TooHighException e) {
-                // Ground block too high.
-                throw new WorldMapFormatException("Ground block too high.");
+                throw new WorldMapFormatException("Block too high.");
             }
         }
 
@@ -549,7 +548,7 @@ public class WorldMap {
                 // Initialise with the correct blocks.
                 newTile = new Tile(blocksForTiles.get(i));
             } catch (TooHighException e) {
-                throw new WorldMapFormatException("Ground block too high.");
+                throw new WorldMapFormatException("Block too high.");
             }
             tiles.add(newTile);
         }
@@ -594,7 +593,7 @@ public class WorldMap {
             if (!seenTiles.add(currentTile)) {
                 // Exits for this tile have already been defined.
                 throw new WorldMapFormatException(
-                        "Tile ID duplicated in exits: "+currentTile);
+                        "Multiple exit lines for tile: "+currentTile);
             }
 
             // Parses the "north:2,east:1,..." part of the string into a map.
