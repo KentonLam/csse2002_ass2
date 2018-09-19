@@ -4,9 +4,9 @@ Name
 wood
 
 total:2
-0
-0
+0 
+0 
 
 exits 
-0
-1
+0 
+1 
