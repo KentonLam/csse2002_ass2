@@ -606,7 +606,7 @@ public class WorldMap {
                     // The tile ID referred to does not exist or the exit
                     // is invalid.
                     throw new WorldMapFormatException(
-                            "Invalid tile ID or direction name.");
+                            "Invalid tile ID or direction name for exit.");
                 }
 
                 try {
