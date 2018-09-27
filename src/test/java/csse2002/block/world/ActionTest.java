@@ -265,7 +265,7 @@ public class ActionTest
                     + "RANDOM_ACTION\n"
             ), testMap);
             fail("ActionFormatException not thrown.");
-        } catch (ActionFormatException e) {}
+        } catch (ActionFormatException ignored) {}
         assertSystemOut(""
                 + "Moved builder north\n"
                 + "Moved builder south\n"
