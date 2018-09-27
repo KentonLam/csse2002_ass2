@@ -70,7 +70,7 @@ public class SparseTileArray {
     private final List<Tile> insertedTiles = new ArrayList<>();
 
     /** Mapping of position to tiles. */
-    private final Map<Position, Tile> positionToTile = new HashMap<>();
+    private final Map<Position, Tile> positionMapping = new HashMap<>();
 
     /**
      * Constructor which initialises an empty SparseTileArray.
@@ -84,7 +84,7 @@ public class SparseTileArray {
      */
     private void resetInternalState() {
         insertedTiles.clear();
-        positionToTile.clear();
+        positionMapping.clear();
     }
 
     /**
@@ -95,7 +95,7 @@ public class SparseTileArray {
      * @require position != null
      */
     public Tile getTile(Position position) {
-        return positionToTile.get(position);
+        return positionMapping.get(position);
     }
 
     /**
@@ -195,8 +195,8 @@ public class SparseTileArray {
             // one position.
             if (insertedTiles.contains(currentTile)) {
                 // The tile has already been encountered.
-                if (positionToTile.containsKey(currentPos)
-                        && positionToTile.get(currentPos).equals(currentTile)) {
+                if (positionMapping.containsKey(currentPos)
+                        && positionMapping.get(currentPos).equals(currentTile)) {
                     // All good, the tile has been seen at the same position.
                     continue;
                 } else {
@@ -208,11 +208,10 @@ public class SparseTileArray {
             }
 
             // The following makes sure each position only contains one tile.
-            if (positionToTile.containsKey(currentPos)) {
+            if (positionMapping.containsKey(currentPos)) {
                 // If we reach here, then this tile hasn't been placed before.
                 // However, there already exists a different tile in its
-                // position. This is geometrically inconsistent; return false
-                // so addLinkedTiles throws.
+                // position. This is geometrically inconsistent, throw.
 
                 // This also handles the case where a reverse exit maps to a
                 // different tile. The earlier tile would already have been
@@ -222,7 +221,7 @@ public class SparseTileArray {
             }
 
             // Add the tile to the grid.
-            positionToTile.put(currentPos, currentTile);
+            positionMapping.put(currentPos, currentTile);
             insertedTiles.add(currentTile);
 
             // Exits of the current tile.
@@ -232,7 +231,7 @@ public class SparseTileArray {
                 if (exits.containsKey(dir.name())) {
                     Tile adjTile = exits.get(dir.name());
 
-                    // All good, queue the adjacent tile to be processed.
+                    // Queue the adjacent tile to be processed.
                     tilesToCheck.add(makeEntry(
                             adjTile,
                             PosFunc.add(currentPos, dir.position())
