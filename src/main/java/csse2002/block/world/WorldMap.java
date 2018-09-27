@@ -78,6 +78,7 @@ public class WorldMap {
                 try {
                     blocks.add(BlockTypes.valueOf(blockType).newInstance());
                 } catch (IllegalArgumentException e) {
+                    // Thrown by .valueOf() if the enum value doesn't exist.
                     throw new WorldMapFormatException(
                             "Invalid block type: "+blockType);
                 }
