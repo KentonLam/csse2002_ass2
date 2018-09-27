@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.Before;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,7 @@ public class SparseTileArrayTest {
     public void testAddTilesThrowsWithWrongReverseExit()
             throws BlockWorldException {
         // Layout: tile1 -> tile2.
-        // However, tile2's west exit is tile1 and should throw.
+        // However, tile2's west exit is not tile1 and should throw.
         tile1.addExit("east", tile2);
         tile2.addExit("west", tile3);
 
@@ -190,12 +191,25 @@ public class SparseTileArrayTest {
             // We assume addLinkedTiles throws as required, otherwise another
             // test would've failed.
             fail();
-        } catch (WorldMapInconsistentException e) {}
+        } catch (WorldMapInconsistentException ignored) {}
 
         assertNull("Sparse map not reset on exception.",
                 sparseArray.getTile(new Position(0, 0)));
         assertEquals("Sparse map not reset to size 0.",
                 0, sparseArray.getTiles().size());
+    }
+
+    @Test
+    public void testAddTilesResetsBeforeExecuting() throws BlockWorldException {
+        // First tile at (0, 0).
+        sparseArray.addLinkedTiles(tile1, 0, 0);
+        // Second at (10, 10). Should remove the first.
+        sparseArray.addLinkedTiles(tile2, 10, 10);
+        assertNull("Position not reset before adding.",
+                sparseArray.getTile(new Position(0, 0)));
+        assertEquals("getTiles not reset.",
+                Arrays.asList(tile2),
+                sparseArray.getTiles());
     }
 
 }
