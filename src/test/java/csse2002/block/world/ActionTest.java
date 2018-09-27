@@ -193,11 +193,6 @@ public class ActionTest
     @Test
     public void testLoadActionNull() throws ActionFormatException {
         BufferedReader reader = makeReader("");
-        try {
-            reader.readLine();
-        } catch (IOException e) {
-            fail("IOException in StringReader.");
-        }
         assertNull("Loading from EOF should be null.",
                 Action.loadAction(reader));
     }
