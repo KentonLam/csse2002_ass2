@@ -212,4 +212,24 @@ public class SparseTileArrayTest {
                 sparseArray.getTiles());
     }
 
+    @Test
+    public void testGetTilesReturnsImmutable() throws BlockWorldException {
+        tile1.addExit("north", tile2);
+        tile1.addExit("south", tile3);
+
+        List<Tile> originalTiles = Arrays.asList(tile1, tile2, tile3);
+        sparseArray.addLinkedTiles(tile1, 0, 0);
+
+        List<Tile> returnedTiles = sparseArray.getTiles();
+
+        try {
+            // Try to mutate the returned list.
+            returnedTiles.add(new Tile());
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            // Modifying returned list was prevented. Squash.
+        }
+
+        assertEquals("Returned list is mutable.",
+                originalTiles, sparseArray.getTiles());
+    }
 }
