@@ -736,8 +736,7 @@ public class WorldMap {
      */
     private static String makeBlockListString(List<Block> blocks) {
         List<String> blocksList = new ArrayList<>();
-        for (int i = 0; i < blocks.size(); i++) {
-            Block inventoryBlock = blocks.get(i);
+        for (Block inventoryBlock : blocks) {
             blocksList.add(BlockTypes.fromInstance(inventoryBlock).name());
         }
         return String.join(",", blocksList);
