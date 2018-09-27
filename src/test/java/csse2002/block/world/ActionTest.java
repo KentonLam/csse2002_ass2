@@ -381,4 +381,12 @@ public class ActionTest
                 blankMap.getBuilder().getCurrentTile());
         assertSystemOut("Error: Invalid action\n");
     }
+
+    @Test
+    public void testActionIntegerValues() {
+        assertEquals(0, Action.MOVE_BUILDER);
+        assertEquals(1, Action.MOVE_BLOCK);
+        assertEquals(2, Action.DIG);
+        assertEquals(3, Action.DROP);
+    }
 }
