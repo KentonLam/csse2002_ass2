@@ -207,6 +207,7 @@ public class SparseTileArrayTest {
         sparseArray.addLinkedTiles(tile2, 10, 10);
         assertNull("Position not reset before adding.",
                 sparseArray.getTile(new Position(0, 0)));
+        //noinspection ArraysAsListWithZeroOrOneArgument
         assertEquals("getTiles not reset.",
                 Arrays.asList(tile2),
                 sparseArray.getTiles());
