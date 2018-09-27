@@ -258,6 +258,7 @@ public class WorldMap {
 
     /**
      * Wrapper around readLine() saving us from NullPointerExceptions.
+     * Throws if EOF is encountered.
      * @param reader Reader.
      * @return Next line, <i>never null</i>.
      * @throws WorldMapFormatException If at EOF or IOException.
