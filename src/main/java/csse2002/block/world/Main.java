@@ -14,15 +14,16 @@ public class Main {
     /**
      * The entry point of the application.
      * 
-     * Takes 3 parameters an input map file (args[0]), actions (args[1]), and an output map file (args[2]). 
+     * Takes 3 parameters an input map file (args[0]), actions (args[1]),
+     * and an output map file (args[2]).
      * 
      * The actions parameter can be either a filename, or the string "System.in". 
      * 
      * This function does the following:
      * <ol>
      * <li> If there are not 3 parameters, (i.e. args.length != 3),
-     *     print "Usage: program inputMap actions outputMap" using System.err.println()
-     *     and then exit with status 1 (Hint: use System.exit()) </li>
+     *     print "Usage: program inputMap actions outputMap"
+     *     using System.err.println() and then exit with status 1) </li>
      * <li> Create a new WorldMap using the input map file. If an
      *     exception is thrown, print the exception to the console using
      *     System.err.println(), and then exit with status 2. </li>
@@ -43,8 +44,8 @@ public class Main {
      *     </li>
      * </ol>
      * 
-     * To print an exception to System.err, use System.err.println(e), where e is the caught
-     *     exception.
+     * To print an exception to System.err, use System.err.println(e), where
+     * e is the caught exception.
      * @param args the input arguments to the program
      */
     public static void main(String[] args) {

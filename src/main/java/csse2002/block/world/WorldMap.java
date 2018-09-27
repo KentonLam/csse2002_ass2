@@ -140,7 +140,7 @@ public class WorldMap {
     /** Sparse tile array storing map data. */
     private final SparseTileArray sparseArray = new SparseTileArray();
 
-    /** Valid compass direction names, unsorted. */
+    /** Valid compass direction names, sorted. */
     private static final List<String> directionNames = new ArrayList<>(4);
     static {
         directionNames.add("north");
