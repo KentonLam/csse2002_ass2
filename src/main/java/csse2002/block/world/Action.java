@@ -102,18 +102,14 @@ public class Action {
     }
 
     /**
-     * Create a single Action if possible from the given reader. 
-     * 
-     * Read a line from the given reader and load the Action on that line.
-     * Only load one Action (<b>hint:</b> reader.readLine()) and return
-     * the created action. 
-     * 
-     * Return null if the reader is at the end of the file. 
+     * Reads the next line of the given reader and creates a single Action.
+     *
+     * Return null if the reader is at the end of the file.
      * 
      * For details of the action format see Action.loadActions(). 
      * 
      * If the action cannot be created (including that caused by an IOException)
-     * an ActionFormatException should be thrown.
+     * an ActionFormatException is be thrown.
      * @param reader the reader to read the action contents form
      * @return the created action, or null if the reader is at the end of
      *      the file.
@@ -313,33 +309,34 @@ public class Action {
      * 
      * Do the following for these actions:
      * <ul>
-     * <li>For DIG action: call Builder.digOnCurrentTile(), then print to console "Top block on
-     *      current tile removed".</li>
-     * <li>For DROP action: call Builder.dropFromInventory(), then print to console "Dropped a
-     *      block from inventory". The dropped item is given by action.getSecondaryAction(), but it
-     *      will need to be converted to an integer. </li>
-     * <li>For the MOVE_BLOCK action: call Tile.moveBlock() on the builder's current tile
-     *      (Builder.getCurrentTile()), then print to console "Moved block
-     *      {direction}". The direction is given by action.getSecondaryAction()</li>
-     * <li>For MOVE_BUILDER action: call Builder.moveTo(), then print to console "Moved
-     *      builder {direction}". The direction is given by action.getSecondaryAction()</li>
+     * <li>For DIG action: call Builder.digOnCurrentTile(),
+     *     then print to console "Top block on current tile removed".</li>
+     * <li>For DROP action: call Builder.dropFromInventory(), then print to
+     *     console "Dropped a block from inventory". The dropped item is given
+     *     by action.getSecondaryAction().</li>
+     * <li>For MOVE_BLOCK action: call Tile.moveBlock() on the builder's
+     *     current tile, then print to console "Moved block {direction}".
+     *     The direction is given by action.getSecondaryAction()</li>
+     * <li>For MOVE_BUILDER action: call Builder.moveTo(), then print to
+     *     console "Moved builder {direction}". The direction is given by
+     *     action.getSecondaryAction()</li>
      * <li>If action.getPrimaryAction() &lt; 0 or action.getPrimaryAction()
-     *      &gt; 3, or action.getSecondary() is not a direction (for MOVE_BLOCK or MOVE_BUILDER),
-     *      or a valid integer (for DROP) then print to console "Error: Invalid action" </li>
+     *      &gt; 3, or action.getSecondary() is not a direction
+     *      (for MOVE_BLOCK or MOVE_BUILDER), or is not a valid integer
+     *      (for DROP) then print to console "Error: Invalid action" </li>
      * </ul>
+     *
      * "{direction}" is one of "north", "east", "south" or "west". 
      * 
      * For handling exceptions do the following:
      * <ul>
-     * <li> If a NoExitException is thrown, print to the console "No exit this way" </li>
-     * <li> If a TooHighException is thrown, print to the console "Too high" </li>
-     * <li> If a TooLowException is thrown, print to the console "Too low" </li>
+     * <li> If a NoExitException is thrown, print to the console
+     *      "No exit this way"</li>
+     * <li> If a TooHighException is thrown, print to the console "Too high"</li>
+     * <li> If a TooLowException is thrown, print to the console "Too low"</li>
      * <li> If an InvalidBlockException is thrown, print to the console "Cannot
-     *      use that block" </li>
+     *      use that block"</li>
      * </ul>
-     * 
-     * Each line printed to the console should have a trailing newline
-     * (i.e., use System.out.println()).
      * @param action the action to be done on the map
      * @param map the map to perform the action on
      * @require action != null, map != null
@@ -348,7 +345,7 @@ public class Action {
         boolean success = false;
         try {
             // Offload to helper to avoid excessive nesting.
-            // This function only handles printing to the console.
+            // The current function only handles printing to the console.
             unsafeProcessAction(action, map);
             success = true;
         } catch (ActionFormatException e) {
@@ -363,9 +360,13 @@ public class Action {
             System.out.println("Cannot use that block");
         }
 
-        switch (success ? action.primaryAction : -1) {
-            case -1: // Unsuccessful, don't print success message.
-                break;
+        if (!success) {
+            // Error message already printed, don't print success message.
+            return;
+        }
+
+        // Print appropriate success message.
+        switch (action.getPrimaryAction()) {
             case DIG:
                 System.out.println("Top block on current tile removed");
                 break;

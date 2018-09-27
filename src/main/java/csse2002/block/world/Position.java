@@ -43,7 +43,7 @@ public class Position implements Comparable<Position> {
      * (see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
      * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
      *
-     * Two objects are equal if and only if both their x and y parts are equal.
+     * Two positions are equal if and only if both their x and y parts are equal.
      *
      * @param obj the object to compare to
      * @return true if obj is an instance of
@@ -59,11 +59,9 @@ public class Position implements Comparable<Position> {
     }
 
     /**
-     * Compute a hashCode that
-     * meets the contract of Object.hashCode 
-     * (see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
-     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
-     * @return a suitable hashcode for the Position
+     * Returns an integer such that this.equals(other) implies
+     * this.hashCode() == other.hashCode().
+     * @return a suitable hashcode for the Position.
      */
     @Override
     public int hashCode() {
@@ -72,22 +70,23 @@ public class Position implements Comparable<Position> {
     }
 
     /**
-     * Compare this position to another position. 
-     * Return
+     * Compare this position to another position.
+     *
      * <ul>
-     * <li> -1 if getX() &lt; other.getX() </li>
-     * <li> -1 if getX() == other.getX() and getY() &lt; other.getY() </li>
-     * <li> 0 if getX() == other.getX() and getY() == other.getY() </li>
-     * <li> 1 if getX() &gt; other.getX() </li>
-     * <li> 1 if getX() == other.getX() and getY() &gt; other.getY() </li>
+     *     <li>If this.x != other.x, returns -1 if this.x < other.x and 1
+     *     otherwise.</li>
+     *     <li>Otherwise, if this.y != other.y, returns -1 if this.y < other.y
+     *     and 1 otherwise.</li>
+     *     <li>Otherwise, returns 0.</li>
      * </ul>
+     *
      * @param other the other Position to compare to
-     * @return -1, 0, or 1 depending on conditions above
+     * @return -1 if this < other, 0 if this == other, 1 if this > other.
      */
     public int compareTo(Position other) {
         // Compare x directions first.
         if (x != other.x) {
-            // This results in the correct values. Proof is trivial.
+            // This function results in the correct values. Proof is trivial.
             return Integer.signum(x - other.x);
         }
         // At this point, we know the x components are equal, so the result
