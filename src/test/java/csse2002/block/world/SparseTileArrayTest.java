@@ -230,10 +230,18 @@ public class SparseTileArrayTest {
         List<Tile> returnedTiles = sparseArray.getTiles();
 
         try {
-            // Try to mutate the returned list.
+            // Try to mutate the returned list by adding elements.
             returnedTiles.add(new Tile());
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             // Modifying returned list was prevented. Squash.
+        }
+
+        try {
+            // Mutate by replacing an existing element.
+            // Catches implementations which support .set() but not .add().
+            returnedTiles.set(0, new Tile());
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            // Squash.
         }
 
         assertEquals("Returned list is mutable.",
