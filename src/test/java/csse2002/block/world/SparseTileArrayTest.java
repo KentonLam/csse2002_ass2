@@ -64,9 +64,9 @@ public class SparseTileArrayTest {
     }
 
     @Test
-    public void testEmptyTileGetTiles() {
-        assertEquals("Empty tile has non-empty getTiles().",
-                new ArrayList<Block>(),
+    public void testEmptyMapGetTiles() {
+        assertEquals("Empty map has non-empty getTiles().",
+                new ArrayList<Tile>(),
                 sparseArray.getTiles());
     }
 
