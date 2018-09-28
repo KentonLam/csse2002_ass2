@@ -3,7 +3,6 @@
         "src_path": "src/main/java/csse2002/block/world/",
         "dest_path": "src/csse2002/block/world/",
         "include": [
-            "Action.java",
             "ActionFormatException.java",
             "Main.java",
             "Position.java",
