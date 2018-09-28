@@ -17,6 +17,8 @@ public class SparseTileArrayTest {
     private Tile tile1;
     private Tile tile2;
     private Tile tile3;
+    private Tile tile4;
+    private Tile tile5;
 
     @Before 
     public void setup() {
@@ -24,6 +26,8 @@ public class SparseTileArrayTest {
         tile1 = new Tile();
         tile2 = new Tile();
         tile3 = new Tile();
+        tile4 = new Tile();
+        tile5 = new Tile();
     }
 
     private List<Tile> makeLinkedTile() {
@@ -162,8 +166,8 @@ public class SparseTileArrayTest {
 
     @Test(expected = WorldMapInconsistentException.class)
     public void testAddTilesOverlappingTileThrows() throws BlockWorldException {
-        Tile tile4 = new Tile();
-        Tile tile5 = new Tile();
+        tile4 = new Tile();
+        tile5 = new Tile();
         tile1.addExit("east", tile2);
         tile2.addExit("north", tile3);
         tile3.addExit("west", tile4);
