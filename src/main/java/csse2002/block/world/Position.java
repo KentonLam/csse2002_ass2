@@ -65,8 +65,11 @@ public class Position implements Comparable<Position> {
      */
     @Override
     public int hashCode() {
-        // Computes a valid hash of the two variables.
-        return Objects.hash(x, y);
+        // Adapted from https://stackoverflow.com/a/263416
+        int hash = 17;
+        hash = 31*hash + x;
+        hash = 31*hash + y;
+        return hash;
     }
 
     /**
