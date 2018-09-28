@@ -34,7 +34,7 @@ public class CheckZipAssignment2 {
 
         if (args.length == 0) {
             System.out.println("Please provide zip file as argument.");
-            return;
+            System.exit(2);
         }
 
         // the zip file to check is the first argument
@@ -108,8 +108,11 @@ public class CheckZipAssignment2 {
                 System.out.println("\t" + filename);
         }
 
+        boolean invalidZip = false;
+
         if (extraFilenames.size() > 0) {
                 // if there is at least one extra file
+                invalidZip = true;
 
                 System.out.println("\nSpurious files:");
                 for (String filename : extraFilenames) {
@@ -119,6 +122,7 @@ public class CheckZipAssignment2 {
 
         if (expectedFilenames.containsValue(false)) {
                 // if there is at least one missing file
+                invalidZip = true;
 
                 System.out.println("\nMissing files:");
                 for (Map.Entry<String, Boolean> entry : expectedFilenames.entrySet()) {
@@ -127,6 +131,9 @@ public class CheckZipAssignment2 {
                         }
                 }
         }
+
+        if (invalidZip)
+            System.exit(1);
 
     }
 }
