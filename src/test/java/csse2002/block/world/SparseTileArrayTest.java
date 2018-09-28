@@ -13,7 +13,9 @@ import java.util.Map;
 
 public class SparseTileArrayTest {
 
+    /* An empty SparseTileArray. */
     private SparseTileArray sparseArray;
+    // Tiles with default blocks and no exits.
     private Tile tile1;
     private Tile tile2;
     private Tile tile3;
