@@ -180,7 +180,8 @@ public class Action {
                 // If !secondaryValid, we will throw, avoiding NPEs.
                 secondary = split.length == 2 ? split[1] : null;
                 break;
-            case DIG: // DIG mandates no secondary action.
+            // DIG mandates no secondary action.
+            case DIG:
                 secondary = split.length == 1 ? "" : null;
                 break;
             default: // Invalid. Leave null.
