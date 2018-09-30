@@ -48,14 +48,21 @@ public class ActionTest
         return new BufferedReader(new StringReader(string));
     }
 
+    /**
+     * Redirects stdout and stderr to streams we can check.
+     */
     @Before 
     public void setupStreams() {
         System.setOut(new PrintStream(outStream));
         System.setErr(new PrintStream(errStream));
     }
 
+    /**
+     * Initialise some useful fields.
+     * @throws BlockWorldException
+     */
     @Before
-    public void setupActions() throws BlockWorldException {
+    public void setup() throws BlockWorldException {
         moveBuilderAction = new Action(Action.MOVE_BUILDER, "south");
         moveBlockAction = new Action(Action.MOVE_BLOCK, "east");
         digAction = new Action(Action.DIG, "");
@@ -69,37 +76,57 @@ public class ActionTest
                         Arrays.asList(new SoilBlock(), new WoodBlock())));
     }
 
+    /**
+     * Restore stdout and stderr to the previous streams.
+     */
     @After
     public void restoreStreams() {
         System.setOut(oldOut);
         System.setErr(oldErr);
     }
 
-    private static WorldMap makeTestMap() throws BlockWorldException {
+    /**
+     * Builds a {@link WorldMap} with some linked tiles.
+     * @return a WorldMap.
+     */
+    private static WorldMap makeTestMap() {
         List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             tiles.add(new Tile());
         }
 
-        tiles.get(0).addExit("north", tiles.get(1));
-        tiles.get(1).addExit("south", tiles.get(0));
-        tiles.get(0).addExit("west", tiles.get(2));
-        tiles.get(2).addExit("south", tiles.get(3));
-        tiles.get(3).addExit("north", tiles.get(2));
-        tiles.get(3).placeBlock(new WoodBlock());
-        tiles.get(3).placeBlock(new WoodBlock());
+        try {
+            tiles.get(0).addExit("north", tiles.get(1));
+            tiles.get(1).addExit("south", tiles.get(0));
+            tiles.get(0).addExit("west", tiles.get(2));
+            tiles.get(2).addExit("south", tiles.get(3));
+            tiles.get(3).addExit("north", tiles.get(2));
+            tiles.get(3).placeBlock(new WoodBlock());
+            tiles.get(3).placeBlock(new WoodBlock());
 
-        List<Block> inventory = new ArrayList<>();
-        inventory.add(new WoodBlock());
-        inventory.add(new WoodBlock());
-        inventory.add(new SoilBlock());
-        inventory.add(new WoodBlock());
-        inventory.add(new WoodBlock());
+            List<Block> inventory = new ArrayList<>();
+            inventory.add(new WoodBlock());
+            inventory.add(new WoodBlock());
+            inventory.add(new SoilBlock());
+            inventory.add(new WoodBlock());
+            inventory.add(new WoodBlock());
 
-        return new WorldMap(tiles.get(0),
-                new Position(0, 0), new Builder("Bob", tiles.get(0), inventory));
+            return new WorldMap(tiles.get(0),
+                    new Position(0, 0), new Builder("Bob", tiles.get(0), inventory));
+        } catch (BlockWorldException e) {
+            // We don't expect these to throw.
+            throw new AssertionError(e);
+        }
     }
 
+    /**
+     * Asserts the given strings are equal, converting \n in expected to
+     * a platform-dependent line ending.
+     *
+     * @param message Message on failure.
+     * @param expected Expected lines, with \n line endings.
+     * @param actual Actual.
+     */
     private static void assertLinesEqual(String message, String expected,
                                          String actual) {
         expected = expected.replaceAll("\\n",
@@ -107,22 +134,53 @@ public class ActionTest
         assertEquals(message, expected, actual);
     }
 
+    /**
+     * Asserts System.out is exactly the given string, converting \n in
+     * expected to a platform-dependent line ending.
+     *
+     * @param message Message on failure.
+     * @param expected Expected System.out output, with \n line endings.
+     */
     private void assertSystemOut(String message, String expected) {
         assertLinesEqual(message, expected, outStream.toString());
     }
 
+    /**
+     * Asserts System.out is exactly the given string, converting \n in
+     * expected to a platform-dependent line ending.
+     *
+     * @param expected Expected System.out output, \n line endings.
+     */
     private void assertSystemOut(String expected) {
         assertSystemOut("Incorrect System.out output.", expected);
     }
 
+    /**
+     * Asserts System.err is exactly the given string, converting \n in
+     * expected to a platform-dependent line ending.
+     *
+     * @param message Message on failure.
+     * @param expected Expected System.err output, with \n line endings.
+     */
     private void assertSystemErr(String message, String expected) {
         assertLinesEqual(message, expected, errStream.toString());
     }
 
+    /**
+     * Asserts System.err is exactly the given string, converting \n in
+     * expected to a platform-dependent line ending.
+     *
+     * @param expected Expected System.err output, \n line endings.
+     */
     private void assertSystemErr(String expected) {
         assertSystemErr("Incorrect System.err output.", expected);
     }
 
+
+    /**
+     * Ensure the {@link Action#Action(int, String)} constructor doesn't throw,
+     * regardless of inputs.
+     */
     @Test
     public void testConstructorDoesntThrow() {
         Map<Integer, String> actionInputs = new HashMap<>();
@@ -141,6 +199,9 @@ public class ActionTest
         }
     }
 
+    /**
+     * Ensure {@link Action#getPrimaryAction()} works normally.
+     */
     @Test
     public void testGetPrimaryAction() {
         assertEquals("Get primary action wrong for move builder.",
@@ -151,6 +212,9 @@ public class ActionTest
             digAction.getPrimaryAction());
     }
 
+    /**
+     * Ensure {@link Action#getSecondaryAction()} works normally.
+     */
     @Test
     public void testGetSecondaryAction() {
         assertEquals("Wrong secondary for move builder.", "south",
@@ -159,37 +223,62 @@ public class ActionTest
                 digAction.getSecondaryAction());
     }
 
+    /**
+     * Ensure {@link Action#loadAction(BufferedReader)} throws when DIG
+     * has a secondary.
+     * @throws ActionFormatException expected.
+     */
     @Test(expected = ActionFormatException.class)
     public void testLoadActionDigSecondary() throws ActionFormatException {
         Action.loadAction(makeReader("DIG south"));
     }
 
+    /**
+     * Ensure {@link Action#loadAction(BufferedReader)} throws when DIG
+     * has a trailing space.
+     * @throws ActionFormatException expected.
+     */
     @Test(expected = ActionFormatException.class)
     public void testLoadActionDigWithSpace() throws ActionFormatException {
         Action.loadAction(makeReader("DIG "));
     }
 
+    /**
+     * Ensure {@link Action#loadAction(BufferedReader)} throws when
+     * MOVE_BUILDER north has a trailing space.
+     * @throws ActionFormatException expected.
+     */
     @Test(expected = ActionFormatException.class)
     public void testLoadActionMoveBuilderTrailingSpace()
             throws ActionFormatException {
         Action.loadAction(makeReader("MOVE_BUILDER north "));
     }
 
+    /**
+     * Ensure {@link Action#loadAction(BufferedReader)} throws when MOVE_BUILDER
+     * has no secondary.
+     * @throws ActionFormatException expected.
+     */
     @Test(expected = ActionFormatException.class)
     public void testLoadActionMoveNoSecondary() throws ActionFormatException {
         Action.loadAction(makeReader("MOVE_BUILDER"));
     }
 
+    // Got lazy...
+
+    // Invalid primary (WEW) should throw.
     @Test(expected = ActionFormatException.class)
     public void testLoadActionInvalidAction() throws ActionFormatException {
         Action.loadAction(makeReader("WEW"));
     }
 
+    // Empty line should throw.
     @Test(expected = ActionFormatException.class)
     public void testLoadActionEmptyString() throws ActionFormatException {
         Action.loadAction(makeReader("\n"));
     }
 
+    // Loading from EOF should be null.
     @Test
     public void testLoadActionNull() throws ActionFormatException {
         BufferedReader reader = makeReader("");
@@ -197,6 +286,7 @@ public class ActionTest
                 Action.loadAction(reader));
     }
 
+    // loadAction works normally.
     @Test
     public void testLoadActionNormal() throws ActionFormatException {
         // Overwrite instance fields with actions loaded from strings.
@@ -227,6 +317,7 @@ public class ActionTest
                 "3", dropAction.getSecondaryAction());
     }
 
+    // loadAction should do no validation.
     @Test
     public void testLoadActionDoesNoValidation() throws ActionFormatException {
         // loadAction should do no validation beyond ensuring a secondary
@@ -244,6 +335,7 @@ public class ActionTest
         }
     }
 
+    // Example processActions from Javadoc.
     @Test
     public void testProcessActionsFromJavaDoc() throws ActionFormatException {
         try {
@@ -274,13 +366,15 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // processAction handling TooHigh.
     @Test
     public void testProcessActionTooHigh() {
         Action.processAction(new Action(Action.DROP, "0"), blankMap);
         assertSystemOut("Too high\n");
         assertSystemErr("");
     }
-    
+
+    // processAction handling NoExit.
     @Test
     public void testProcessActionNoExit() {
         Action.processAction(new Action(Action.MOVE_BUILDER, "east"), blankMap);
@@ -288,8 +382,9 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // processAction handling TooLow.
     @Test
-    public void testProcessActionsTooLow() throws ActionFormatException {
+    public void testProcessActionsTooLow() {
         // Get rid of default starting blocks.
         try {
             blankMapStartingTile.removeTopBlock();
@@ -303,10 +398,11 @@ public class ActionTest
         assertSystemOut("Too low\n");
         assertSystemErr("");
     }
-    
+
+    // processAction handling InvalidBlock.
     @Test
     public void testProcessActionInvalidBlock()
-            throws ActionFormatException, TooHighException, InvalidBlockException {
+            throws TooHighException, InvalidBlockException {
         // Add undiggable block.
         blankMapStartingTile.placeBlock(new StoneBlock());
 
@@ -315,6 +411,7 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // processAction handling DIG normally.
     @Test
     public void testProcessActionDig() {
         Action.processAction(new Action(Action.DIG, ""), blankMap);
@@ -324,6 +421,7 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // MOVE_BUILDER normally.
     @Test
     public void testProcessActionMoveBuilder() {
         Action.processAction(new Action(Action.MOVE_BUILDER, "north"), testMap);
@@ -333,7 +431,8 @@ public class ActionTest
         assertSystemOut("Moved builder north\n");
         assertSystemErr("");
     }
-    
+
+    // DROP normal.
     @Test
     public void testProcessActionDrop() throws TooLowException {
         Block theBlock = blankMap.getBuilder().getInventory().get(1);
@@ -347,6 +446,7 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // MOVE_BLOCK normal.
     @Test
     public void testProcessActionMoveBlock() throws BlockWorldException {
         Block topBlock = new WoodBlock();
@@ -364,6 +464,7 @@ public class ActionTest
         assertSystemErr("");
     }
 
+    // MOVE_BUILDER via northeast should fial.
     @Test
     public void testProcessActionMoveBuilderExitExistsButNotCompass()
             throws NoExitException {
@@ -377,6 +478,7 @@ public class ActionTest
         assertSystemOut("Error: Invalid action\n");
     }
 
+    // Tests integer values of constants.
     @Test
     public void testActionIntegerValues() {
         assertEquals(0, Action.MOVE_BUILDER);
