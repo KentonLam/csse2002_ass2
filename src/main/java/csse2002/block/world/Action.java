@@ -169,33 +169,27 @@ public class Action {
         }
 
         // Validate secondary action based on primary type.
-        boolean secondaryValid = false;
+        // Null indicates an invalid secondary.
         String secondary = null;
         switch (primaryID) {
             // These require some secondary action.
             case MOVE_BUILDER:
             case MOVE_BLOCK:
             case DROP:
-                secondaryValid = split.length == 2;
                 // Using ternary so we don't need _another_ switch/case.
                 // If !secondaryValid, we will throw, avoiding NPEs.
-                secondary = secondaryValid ? split[1] : null;
+                secondary = split.length == 2 ? split[1] : null;
                 break;
             case DIG: // DIG mandates no secondary action.
-                secondaryValid = split.length == 1;
-                secondary = secondaryValid ? "" : null;
+                secondary = split.length == 1 ? "" : null;
                 break;
-            default:
+            default: // Invalid. Leave null.
         }
 
-        if (!secondaryValid) {
+        if (secondary == null) {
             throw new ActionFormatException(
                     "Secondary action exists for DIG or doesn't exist for"
                     +" MOVE_BUILDER, MOVE_BLOCK or DROP.");
-        }
-        // Sanity check.
-        if (secondary == null) {
-            throw new AssertionError("Secondary is valid but null.");
         }
 
         // If we reach here, we have a valid primary and secondary.
