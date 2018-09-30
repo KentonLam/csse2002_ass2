@@ -21,15 +21,24 @@ public class WorldMapTest {
      */
     private WorldMap basicMap;
 
+    /**
+     * Setup basic and empty maps.
+     */
     @Before
     public void setup() throws BlockWorldException, FileNotFoundException {
         emptyMap = new WorldMap("worldmap_test_empty.txt");
         basicMap = new WorldMap("worldmap_test_basic.txt");
     }
 
-    private List<Class> getElementTypes(Iterable array) {
+    /**
+     * Given an iterable, returns a list corresponding to the class of each
+     * element.
+     * @param iterable input iterable.
+     * @return List of classes.
+     */
+    private List<Class> getElementTypes(Iterable iterable) {
         List<Class> classes = new ArrayList<>();
-        for (Object o : array) {
+        for (Object o : iterable) {
             classes.add(o.getClass());
         }
         return classes;
@@ -38,7 +47,7 @@ public class WorldMapTest {
     /**
      * Tests the private helper getElementTypes.
      * This is important, as we use it in many other tests.
-     * */
+     */
     @Test
     public void testGetElementTypes() {
         List<Block> blocks = new ArrayList<Block>() {{
@@ -55,12 +64,14 @@ public class WorldMapTest {
         );
     }
 
+    // Test getStartPosition.
     @Test
     public void testBasicMapInitialPosition() {
         assertEquals("Initial position wrong.", new Position(11, 7),
                 basicMap.getStartPosition());
     }
 
+    // Test first tile of getTiles.
     @Test
     public void testBasicMapFirstTile() {
         assertEquals("First tile of getTiles() is not the starting tile.",
@@ -68,6 +79,7 @@ public class WorldMapTest {
                 basicMap.getTile(basicMap.getStartPosition()));
     }
 
+    // Test builder name.
     @Test
     public void testBasicMapBuilderName() {
         assertEquals("Builder name wrong.", "The Builder's Name",
