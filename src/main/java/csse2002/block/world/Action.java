@@ -273,9 +273,6 @@ public class Action {
      * (The line "RANDOM_ACTION" should then cause an ActionFormatException to be thrown)
      * </pre>
      * 
-     * 
-     * Hint: Repeatedly call Action.loadAction() to get the next Action, and
-     * then Action.processAction() to process the action.
      * @param reader the reader to read actions from
      * @param startingMap the starting map that actions will be applied to
      * @throws ActionFormatException if loadAction throws an
