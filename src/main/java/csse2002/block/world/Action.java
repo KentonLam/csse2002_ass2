@@ -15,7 +15,6 @@ import java.util.Set;
  */
 
 public class Action {
-
     // These should really be represented as an enum class...
     // Actually, we should have an ActionType superclass with subclasses of
     // specific actions.
@@ -70,10 +69,7 @@ public class Action {
      *    can be passed to secondaryAction. </li>
      * </ol>
      * 
-     * This constructor does not need to check primaryAction or secondaryAction,
-     * it just needs to construct an action such that
-     * getPrimaryAction() == primaryAction, and
-     * getSecondaryAction().equals(secondaryAction).
+     * This constructor does not to check primaryAction or secondaryAction.
      * @param primaryAction the action to be created
      * @param secondaryAction the supplementary information associated with the
      *                         primary action
@@ -85,8 +81,8 @@ public class Action {
     }
 
     /**
-     * Get the integer representing the Action (e.g., return 0 if Action is MOVE_BUILDER)
-     * @return the primary action
+     * Gets the integer representing the Action type.
+     * @return the primary action int.
      */
     public int getPrimaryAction() {
         return primaryAction;
@@ -94,8 +90,8 @@ public class Action {
 
     /**
      * Gets the supplementary information associated with the Action
-     * @return the secondary action, or "" (empty string) if no secondary
-     *  action exists
+     * @return the secondary action or an empty string if no secondary
+     *  action is required.
      */
     public String getSecondaryAction() {
         return secondaryAction;
@@ -106,15 +102,16 @@ public class Action {
      *
      * Return null if the reader is at the end of the file.
      * 
-     * For details of the action format see Action.loadActions(). 
+     * For details of the action format see
+     * {@link #processActions(BufferedReader, WorldMap)}.
      * 
-     * If the action cannot be created (including that caused by an IOException)
+     * If the action cannot be created (including that caused by an IOException),
      * an ActionFormatException is be thrown.
-     * @param reader the reader to read the action contents form
+     * @param reader the reader to read the action contents from.
      * @return the created action, or null if the reader is at the end of
      *      the file.
      * @throws ActionFormatException if the line has invalid contents and
-     *                                the action cannot be created
+     *                                the action cannot be created.
      * @require reader != null
      */
     public static Action loadAction(BufferedReader reader)
@@ -135,6 +132,7 @@ public class Action {
 
     /**
      * Loads a single action given by actionString.
+     *
      * @param actionString action string, non-null.
      * @return loaded action.
      * @throws ActionFormatException if primary action is not valid, secondary
