@@ -22,6 +22,7 @@ public class SparseTileArrayTest {
     private Tile tile4;
     private Tile tile5;
 
+    // Set up blank tile array and five tiles.
     @Before 
     public void setup() {
         sparseArray = new SparseTileArray();
@@ -32,6 +33,10 @@ public class SparseTileArrayTest {
         tile5 = new Tile();
     }
 
+    /**
+     * Returns a tile linked to other tiles.
+     * @return Tile.
+     */
     private List<Tile> makeLinkedTile() {
         List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -57,6 +62,7 @@ public class SparseTileArrayTest {
         return tiles;
     }
 
+    // Name.
     @Test
     public void testEmptyTileArrayShouldBeNullEverywhere() {
         for (int i = 0; i < 10; i++) {
@@ -69,6 +75,7 @@ public class SparseTileArrayTest {
         }
     }
 
+    // An empty map should return empty getTiles.
     @Test
     public void testEmptyMapGetTiles() {
         assertEquals("Empty map has non-empty getTiles().",
@@ -76,6 +83,7 @@ public class SparseTileArrayTest {
                 sparseArray.getTiles());
     }
 
+    // Test getTile works normally.
     @Test
     public void testGetTile() throws BlockWorldException {
         Tile tile = new Tile();
@@ -87,12 +95,15 @@ public class SparseTileArrayTest {
         
     }
 
+    // Test addLinkedTiles works normally.
     @Test
     public void testAddLinkedTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
 
+        // Execute the code.
         sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
+        // Build the map to test against.
         HashMap<Position, Tile> expectedMap = new HashMap<>();
         expectedMap.put(new Position(0, 0), tiles.get(0));
         expectedMap.put(new Position(-1, 1), tiles.get(1));
@@ -111,14 +122,14 @@ public class SparseTileArrayTest {
         }
     }
 
+    // Test getTiles works normally.
     @Test
     public void testGetTilesNormal() throws BlockWorldException {
         List<Tile> tiles = makeLinkedTile();
-        // This executes the code under test.
+
         sparseArray.addLinkedTiles(tiles.get(0), 0, 0);
 
         // The following is just to generate the expected tile list.
-        // This could probably be made more robust.
         int[] order = new int[] {
                 0, 2, 3, 7, 1, 4, 8, 5, 9, 6
         };
@@ -131,7 +142,6 @@ public class SparseTileArrayTest {
                 sparseArray.getTiles()
         );
     }
-
 
     @Test(expected = WorldMapInconsistentException.class)
     public void testAddTilesThrowsWithWrongReverseExit()
@@ -163,6 +173,7 @@ public class SparseTileArrayTest {
     @Test(expected = WorldMapInconsistentException.class)
     public void testAddTilesLinkingToSelfThrows() throws BlockWorldException {
         tile1.addExit("north", tile1);
+        // Tile has itself as a north exit. Clearly wrong.
         sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
@@ -183,6 +194,7 @@ public class SparseTileArrayTest {
         sparseArray.addLinkedTiles(tile1, 0, 0);
     }
 
+    // Ensure the sparse tile array is fully reset on exceptions.
     @Test
     public void testAddTilesResetsOnException() throws BlockWorldException {
         sparseArray.addLinkedTiles(tile1, 0, 0);
@@ -205,6 +217,7 @@ public class SparseTileArrayTest {
                 0, sparseArray.getTiles().size());
     }
 
+    // Ensure the sparse tile array is reset before all calls to addLinkedTiles
     @Test
     public void testAddTilesResetsBeforeExecuting() throws BlockWorldException {
         // First tile at (0, 0).
@@ -219,6 +232,8 @@ public class SparseTileArrayTest {
                 sparseArray.getTiles());
     }
 
+    // Modifying the return value of getTiles shouldn't affect the internal
+    // data structure.
     @Test
     public void testGetTilesReturnsImmutable() throws BlockWorldException {
         tile1.addExit("north", tile2);
