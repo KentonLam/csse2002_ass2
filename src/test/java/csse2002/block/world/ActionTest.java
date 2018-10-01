@@ -464,7 +464,7 @@ public class ActionTest
         assertSystemErr("");
     }
 
-    // MOVE_BUILDER via northeast should fial.
+    // MOVE_BUILDER via northeast should fail.
     @Test
     public void testProcessActionMoveBuilderExitExistsButNotCompass()
             throws NoExitException {
