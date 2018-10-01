@@ -262,4 +262,16 @@ public class SparseTileArrayTest {
         assertEquals("Returned list is mutable.",
                 originalTiles, sparseArray.getTiles());
     }
+
+    // Exits other than NESW shouldn't be added.
+    @Test
+    public void testAddLinkedTilesIgnoresNonNESW() throws BlockWorldException {
+        tile1.addExit("northeast", tile2);
+        tile1.addExit("diagonal", tile3);
+
+        sparseArray.addLinkedTiles(tile1, 0, 0);
+
+        assertEquals("Exits other than NESW added.",
+                Arrays.asList(tile1), sparseArray.getTiles());
+    }
 }
