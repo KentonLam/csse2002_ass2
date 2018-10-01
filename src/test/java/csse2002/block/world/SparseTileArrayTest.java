@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 public class SparseTileArrayTest {
 
     /* An empty SparseTileArray. */
@@ -224,9 +225,9 @@ public class SparseTileArrayTest {
         sparseArray.addLinkedTiles(tile1, 0, 0);
         // Second at (10, 10). Should remove the first.
         sparseArray.addLinkedTiles(tile2, 10, 10);
+
         assertNull("Position not reset before adding.",
                 sparseArray.getTile(new Position(0, 0)));
-        //noinspection ArraysAsListWithZeroOrOneArgument
         assertEquals("getTiles not reset.",
                 Arrays.asList(tile2),
                 sparseArray.getTiles());
