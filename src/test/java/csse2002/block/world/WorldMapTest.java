@@ -248,6 +248,10 @@ public class WorldMapTest {
         }
     }
 
+    @Test
+    public void test() throws WorldMapInconsistentException, WorldMapFormatException, FileNotFoundException {
+        new WorldMap("worldmaps_invalid/duplicated exit identical.txt");
+    }
 
 
 }
