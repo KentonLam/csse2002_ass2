@@ -406,7 +406,6 @@ public class WorldMap {
      * <ul>
      *     <li>Comma-delimited fields (no spaces)</li>
      *     <li>Lowercase field names</li>
-     *     <li>No repeated field names</li>
      *     <li>Non-negative integers</li>
      * </ul>
      * </p>
@@ -437,9 +436,7 @@ public class WorldMap {
 
         for (String field : fields) {
             Matcher matcher = fieldRegex.matcher(field);
-            // Throw on repeated names too.
-            if (matcher.matches() && !outputMap.containsKey(matcher.group(1))) {
-                // If it matches, we know the integer will be valid.
+            if (matcher.matches()) {
                 outputMap.put(matcher.group(1),
                         safeParseInt(matcher.group(2)));
             } else {
