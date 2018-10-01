@@ -117,6 +117,8 @@ public class WorldMap {
      * @param <R> Right type.
      */
     private static class Pair<L, R> {
+        // Didn't want to depend on JavaFX solely for this class.
+
         public final L left;
         public final R right;
 
@@ -607,6 +609,9 @@ public class WorldMap {
                     throw new WorldMapFormatException(
                             "Invalid tile ID or direction name for exit.");
                 }
+
+                // We assume duplicated valid direction names are valid
+                // and later exits override earlier ones.
 
                 try {
                     tiles.get(currentTile).addExit(
