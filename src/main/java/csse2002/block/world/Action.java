@@ -177,7 +177,6 @@ public class Action {
             case MOVE_BLOCK:
             case DROP:
                 // Using ternary so we don't need _another_ switch/case.
-                // If !secondaryValid, we will throw, avoiding NPEs.
                 secondary = split.length == 2 ? split[1] : null;
                 break;
             // DIG mandates no secondary action.
