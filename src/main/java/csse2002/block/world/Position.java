@@ -1,7 +1,5 @@
 package csse2002.block.world;
 
-import java.util.Objects;
-
 /**
  * Represents a two-dimensional position on the world map.
  */
