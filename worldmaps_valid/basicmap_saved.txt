@@ -6,9 +6,9 @@ wood,wood,wood,soil,wood
 total:3
 0 stone,stone,stone
 1 stone,wood,soil
-2 stone,null,soil,wood,wood
+2 stone,grass,soil,wood,wood
 
 exits
-0 east:2,north:1
+0 north:1,east:2
 1 south:0
 2 

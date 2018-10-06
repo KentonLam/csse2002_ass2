@@ -2,15 +2,19 @@ package csse2002.block.world;
 
 /**
  * A World Map file contains the wrong format.
- * @serial exclude
  */
 public class WorldMapFormatException extends BlockWorldException {
 
-    public WorldMapFormatException() {
-        super();
-    }
+    /**
+     * New {@link WorldMapFormatException} with no message.
+     */
+    public WorldMapFormatException() {}
 
+    /**
+     * New {@link WorldMapFormatException} with given message.
+     */
     public WorldMapFormatException(String message) {
         super(message);
     }
+
 }

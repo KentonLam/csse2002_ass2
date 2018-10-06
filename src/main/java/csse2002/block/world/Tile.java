@@ -15,6 +15,7 @@ import java.util.TreeMap;
  * Maintains a mapping between exit names and other tiles. <br>
  * @serial exclude
  */
+@SuppressWarnings("ALL")
 public class Tile implements Serializable {
     /* The maximum number of blocks allowed on a tile. */
     private static final int MAX_BLOCKS = 8;
@@ -97,7 +98,7 @@ public class Tile implements Serializable {
      * @return map of names to Tiles
      */
     public Map<String, Tile> getExits() {
-        return Collections.unmodifiableMap(this.exits);
+        return Collections.unmodifiableMap(exits);
     }
 
     /**
@@ -107,7 +108,7 @@ public class Tile implements Serializable {
      * @return Blocks on the Tile
      */
     public List<Block> getBlocks() {
-        return Collections.unmodifiableList(this.blocks);
+        return Collections.unmodifiableList(blocks);
     }
 
     /**

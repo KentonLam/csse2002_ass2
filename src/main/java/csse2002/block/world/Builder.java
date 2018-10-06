@@ -12,6 +12,7 @@ import java.util.Map;
  * that the Builder is on)
  * @serial exclude
  */
+@SuppressWarnings("ALL")
 public class Builder {
     /* Our inventory */
     private List<Block> contents;
@@ -91,7 +92,7 @@ public class Builder {
      * @return blocks in the inventory
      */
     public List<Block> getInventory() {
-        return Collections.unmodifiableList(this.contents);
+        return Collections.unmodifiableList(contents);
     }
 
     /**

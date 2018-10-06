@@ -1,288 +1,243 @@
 package csse2002.block.world;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+
 
 /**
- * A sparse representation of tiles in an Array. <br>
- * Contains {@link Tile Tiles}s stored with an
- * associated {@link Position Position} (x, y) in a map. <br>
- *
- * @serial exclude
+ * Representation of tiles on a two-dimensional grid of arbitrary size.
  */
 public class SparseTileArray {
 
-    // lookup tiles by position
-    private HashMap<Position, Tile> tileMap;
-
-    // a set of tiles in the order in
-    // a breadth-first search order
-    private List<Tile> orderedTiles;
-
     /**
-     * Constructor for a SparseTileArray.
-     * Initializes an empty SparseTileArray, such that
-     * getTile(new Position(x, y)) returns null for any x and y and
-     * getTiles() returns an empty list.
+     * Helper class containing arithmetic operations for Position objects.
      */
-    public SparseTileArray() {
-        reset();
+    private static class PosFunc {
+        private static Position add(Position p1, Position p2) {
+            return new Position(p1.getX()+p2.getX(), p1.getY()+p2.getY());
+        }
+        private static Position neg(Position pos) {
+            return new Position(-pos.getX(), -pos.getY());
+        }
     }
 
     /**
-     * Get the tile at position at (x, y), given by position.getX() and
-     * position.getY(). Return null if there is no tile at (x, y). <br>
-     * Hint: Construct a {@literal Map<Position, Tile>}
-     * in addLinkedTiles to allow looking up tiles
-     * by position.
-     * @param position the tile position
-     * @return the tile at (x, y) or null if
-     *         no such tile exists.
+     * Represents cardinal directions as well as opposites to each direction
+     * and their representation as a Position shift.
+     */
+    private enum Direction {
+        north(0, -1, "south"),
+        east(1, 0, "west"),
+        south(0, 1, "north"),
+        west(-1, 0, "east");
+
+        private final String oppositeName;
+        private final Position position;
+
+        /**
+         * Creates a Direction object.
+         * @param x Shift in the x direction.
+         * @param y Shift in the y direction.
+         * @param oppositeName Name of the direction opposite this.
+         */
+        Direction(int x, int y, String oppositeName) {
+            this.oppositeName = oppositeName;
+            position = new Position(x, y);
+        }
+
+        /**
+         * Returns the direction value of the compass direction opposite this.
+         * */
+        Direction opposite() {
+            return Direction.valueOf(oppositeName);
+        }
+
+        /**
+         * Returns this direction as a change in position.
+         */
+        Position position() {
+            return position;
+        }
+    }
+
+    /** Set of inserted tiles, in BFS order relative to a starting tile. */
+    private final List<Tile> insertedTiles = new ArrayList<>();
+
+    /** Mapping of position to tiles. */
+    private final Map<Position, Tile> positionMapping = new HashMap<>();
+
+    /**
+     * Constructor which initialises an empty SparseTileArray.
+     * More precisely, getTile(new Position(x, y)) returns null for any x and y.
+     */
+    public SparseTileArray() {}
+
+    /**
+     * Resets the map data structures to be empty. Only mutates the fields;
+     * does not reassign them.
+     */
+    private void resetInternalState() {
+        insertedTiles.clear();
+        positionMapping.clear();
+    }
+
+    /**
+     * Gets the tile at position (x, y) or null if there is no tile at that
+     * position.
+     * @param position position.
+     * @return tile at (x, y) or null if no such tile exists.
      * @require position != null
      */
     public Tile getTile(Position position) {
-        return tileMap.get(position);
+        return positionMapping.get(position);
     }
 
     /**
-     * Get a set of ordered tiles from SparseTileArray in
-     * breadth-first-search order. <br>
-     * The startingTile (passed to addLinkTiles) should
-     * be the first tile in the list. The following tiles
-     * should be the tiles at the "north", "east", "south" and
-     * "west" exits from the starting tile, if they exist. <br>
-     * Then for each of those tiles, the next tiles will be their "north",
-     * "east", "south" and "west" exits, if they exist.
-     * The order should continue in the same way through all the tiles
-     * that are linked to startingTile. <br>
-     * The list returned by getTiles may be immutable, and
-     * if not, changing the list (i.e., adding or removing elements)
-     * should not change that returned by subsequent calls to
-     * getTiles().
-     * @return a list of tiles in breadth-first-search
-     *         order.
+     * Returns a set of ordered tiles from the sparse tile array in
+     * breadth-first-search order.
+     *
+     * More precisely, tiles are given from
+     * the startingTile to other tiles, iterating over exits in the direction
+     * north, east, south, west.
+     * @return a list of tiles in breadth-first-search order.
      */
     public List<Tile> getTiles() {
-        return new ArrayList<>(orderedTiles);
+        // Because addLinkedTiles is implemented as BFS, we simply cache
+        // the result of that and return it here.
+        return Collections.unmodifiableList(insertedTiles);
     }
 
     /**
-     * Add a set of tiles to the sparse tilemap. <br>
-     * This function does the following:
-     * <ol>
-     * <li> Remove any tiles that are already existing in the sparse map. </li>
-     * <li> Add startingTile at position (startingX, startingY), such
-     * that getTile(new Position(startingX, startingY)) == startingTile. </li>
-     * <li> For each pair of linked tiles (tile1 at (x1, y1) and tile2 at
-     * (x2, y2) that are accessible from startingTile (i.e. there is a
-     * path through a series of exits
-     * startingTile.getExits().get("north").getExits().get("east") ...
-     * between the two tiles), tile2 will get a new position based on tile1's
-     * position, and tile1's exit name.
-     * <ul>
-     *     <li> tile2 at "north"  exit should get a new position of
-     *          (x1, y1 - 1) i.e. getTile(new Position(x1, y1 - 1))
-     *          == tile1.getExits().get("north") </li>
-     *     <li> tile2 at "east" exit should get a position of (x1 + 1, y1),
-     *          i.e. getTile(new Position(x1 + 1, y1))
-     *          == tile1.getExits().get("east") </li>
-     *     <li> tile2 at "south" exit should get a position of (x1, y1 + 1),
-     *          i.e. getTile(new Position(x1, y1 + 1))
-     *          == tile1.getExits().get("south") </li>
-     *     <li> tile2 at "west" exit should get a position of (x1 - 1, y1),
-     *          i.e. getTile(new Position(x1 - 1, y1))
-     *          == tile1.getExits().get("west")</li>
-     * </ul>
-     * </li>
-     * <li> If there are tiles that are not geometrically consistent, i.e. Tiles
-     * that would occupy the same position or require two different coordinates
-     * for getTile() method to work, throw a WorldMapInconsistentException. <br>
-     * Two examples of inconsistent tiles are:
-     * <ol>
-     *     <li> tile1.getExits().get("north").getExits().get("south) is non null
-     *          and not == to tile1, throw a WorldMapInconsistentException.
-     *          Note: one waY exits are allowed, so
-     *          tile1.getExits().get("north").getExits().get("south) == null
-     *          would be acceptable, but
-     *          tile1.getExits().get("north").getExits().get("south)
-     *          == tile2 foR some other non-null tile2 is not. </li>
-     *     <li> tile1.getExits().get("north").getExits().get("north") == tile1.
-     *          tile1 exits in two different places in this case. </li>
-     * </ol>
-     * </li>
-     * <li> getTiles() should return a list of each accessible tile in a
-     * breadth-first search order (see getTiles()) </li>
+     * Add a set of tiles to the sparse grid.
      *
-     * <li> If an exception is thrown, reset the state of the SparseTileArray
-     * such that getTile(new Position(x, y)) returns null for any x and y. </li>
-     * </ol>
+     * <p>Removes all existing tiles before inserting any new tiles, then adds
+     * startingTile at the given x and y coordinates. Iterates over any tiles
+     * connected to startingTile (directly or transitively) via north, east,
+     * south or west exits and adds them to positions relative to the starting
+     * tile. If an exception is thrown (see below), the sparse tile array is
+     * reset to an empty state.</p>
+     *
+     * <p>Enforces geometric consistency. Specifically, one tile can only
+     * appear  one position and one position can only contain one tile.
+     * More formally, there exists a bijection from positions to tiles.
+     * If these constraints are violated, a {@link WorldMapInconsistentException}
+     * will be thrown.</p>
      *
      * @param startingTile the starting point in adding the linked tiles. All
-     *                     added tiles must have a path (via multiple exits) to
-     *                     this tile.
-     * @param startingX    the x coordinate of startingTile in the array
-     * @param startingY    the y coordinate of startingTile in the array
+     *                      added tiles must have a path (via multiple exits) to this
+     *                      tile.
+     * @param startingX the x coordinate for startingTile.
+     * @param startingY the y coordinate for startingTile.
      * @throws WorldMapInconsistentException if the tiles in the set are not
-     *                                       Geometrically consistent
-     *
+     *                                        geometrically consistent.
      * @require startingTile != null
-     * @ensure tiles accessed through getTile() are geometrically consistent
+     * @ensure tiles accessed through getTile() are geometrically consistent.
      */
     public void addLinkedTiles(Tile startingTile, int startingX, int startingY)
             throws WorldMapInconsistentException {
+        // We offload the actual computations to a helper function and
+        // clean before/after it.
+        resetInternalState();
+        try {
+            unsafeBreadthFirstAddTiles(
+                    startingTile, new Position(startingX, startingY));
+        } catch (WorldMapInconsistentException e) {
+            resetInternalState();
+            throw e;
+        }
+    }
 
-        Queue<Tile> tilesToProcess = new ArrayDeque<>();
+    /**
+     * Shortcut for
+     * <code>new AbstractMap.SimpleImmutableEntry(left, right)</code>.
+     * @param left Left object.
+     * @param right Right object.
+     * @param <L> Left type.
+     * @param <R> Right type.
+     * @return The entry pair.
+     */
+    private static <L, R> Map.Entry<L, R> makeEntry(L left, R right) {
+        return new AbstractMap.SimpleImmutableEntry<>(left, right);
+    }
 
-        // lookup positions by tile
-        // Note: tile equals/hashCode will be
-        // default, so each tile instance will
-        // be unique.
-        HashMap<Tile, Position> tilePositions = new HashMap<>();
+    /**
+     * Helper function to execute the breadth first recursion through
+     * startingTile's adjacent tiles. Return value indicates if adding all
+     * linked tiles succeeded.
+     *
+     * <b>Important:</b> This method is unsafe; it does not clear the internal
+     * state before executing or on exceptions.
+     *
+     * @param startingTile Tile to start from, cannot be null.
+     * @param startingPos Position to start at.
+     * @throws WorldMapInconsistentException Map is geometrically inconsistent.
+     */
+    private void unsafeBreadthFirstAddTiles(Tile startingTile,
+                                            Position startingPos)
+            throws WorldMapInconsistentException {
+        // Initialise queue with starting tile.
+        Queue<Map.Entry<Tile, Position>> tilesToCheck = new LinkedList<>();
+        tilesToCheck.add(makeEntry(startingTile, startingPos));
 
-        Position startingPosition = new Position(startingX, startingY);
+        while (!tilesToCheck.isEmpty()) {
+            // Extract the next tile in the queue.
+            Map.Entry<Tile, Position> tileAtPos = tilesToCheck.remove();
+            Tile currentTile = tileAtPos.getKey();
+            Position currentPos = tileAtPos.getValue();
 
-        // add the starting position to the queue for processing.
-        addTileForProcessing(tilesToProcess, tileMap, tilePositions,
-                startingPosition, startingTile);
+            // The following 'if' logic makes sure each tile exists in only
+            // one position.
+            if (insertedTiles.contains(currentTile)) {
+                // The tile has already been encountered.
+                if (positionMapping.containsKey(currentPos)
+                        && positionMapping.get(currentPos).equals(currentTile)) {
+                    // All good, the tile has been seen at the same position.
+                    continue;
+                } else {
+                    // Inconsistent map. This tile has already been placed
+                    // elsewhere.
+                    throw new WorldMapInconsistentException(
+                            "Exits lead to one tile in multiple positions.");
+                }
+            }
 
-        // constants for loop below
-        final String[] EXITS = {"north", "east", "south", "west"};
-        final int[] DIRECTIONS_X = {0, 1, 0, -1};
-        final int[] DIRECTIONS_Y = {-1, 0, 1, 0};
+            // The following makes sure each position only contains one tile.
+            if (positionMapping.containsKey(currentPos)) {
+                // If we reach here, then this tile hasn't been placed before.
+                // However, there already exists a different tile in its
+                // position. This is geometrically inconsistent, throw.
 
+                // This also handles the case where a reverse exit maps to a
+                // different tile. The earlier tile would already have been
+                // placed in the position, leading to this case.
+                throw new WorldMapInconsistentException(
+                        "Exits lead to multiple tiles in one position.");
+            }
 
-        while (tilesToProcess.size() > 0) {
-            // loop until there are no more tiles to process
+            // Add the tile to the grid.
+            positionMapping.put(currentPos, currentTile);
+            insertedTiles.add(currentTile);
 
-            // get the next tile from the queue and its associated position
-            Tile tile = tilesToProcess.element();
-            orderedTiles.add(tile);
+            // Exits of the current tile.
+            Map<String, Tile> exits = currentTile.getExits();
+            // Iterate over the directions in order of N, E, S, W.
+            for (Direction dir : Direction.values()) {
+                if (exits.containsKey(dir.name())) {
+                    Tile adjTile = exits.get(dir.name());
 
-            Position position = tilePositions.get(tile);
-
-            // remove the tile from the queue
-            tilesToProcess.remove();
-
-            for (int i = 0; i < EXITS.length; i++) {
-                // go through each exit name ("north", "east", "south", "west"}
-
-                // get the tile in that direction
-                Tile tileInDirection = tile.getExits().get(EXITS[i]);
-
-                // create the associated position in that direction
-                Position positionInDirection =
-                        new Position(position.getX() + DIRECTIONS_X[i],
-                        position.getY() + DIRECTIONS_Y[i]);
-
-                try {
-                    if (checkExistingTileValid(tileMap, tilePositions,
-                            positionInDirection, tileInDirection)) {
-
-                        // if the tile is valid (hasn't already been placed, the map
-                        // is still consistent) add the new tile for processing.
-                        addTileForProcessing(tilesToProcess, tileMap, tilePositions,
-                                positionInDirection, tileInDirection);
-                    }
-                } catch (WorldMapInconsistentException inconsistentException) {
-                    reset();
-                    throw inconsistentException;
+                    // Queue the adjacent tile to be processed.
+                    tilesToCheck.add(makeEntry(
+                            adjTile,
+                            PosFunc.add(currentPos, dir.position())
+                    ));
                 }
             }
         }
-    }
-
-    /**
-     * Check to see whether we should add a tile a for processing. The following
-     * cases are handled:
-     * <ol>
-     * <li> tile is null, in which case we return false</li>
-     * <li> the tile has already been placed at a different position, so throw a
-     * WorldMapInconsistentException </li>
-     * <li> there is a different tile at the current position, so throw
-     * a WorldMapInconsistentException </li>
-     * <li> the tile has already been placed in a valid location,
-     * so we return false (we don't want to place it again. </li>
-     * </ol>
-     *
-     * @param positionToTile the current mapping from positions to tiles
-     * @param tileToPosition the current mapping from tiles to positions
-     * @param position       the position we want to place a tile at
-     * @param tile           the tile we want to place
-     * @return true if we can place tile at position, false otherwise.
-     * @throws WorldMapInconsistentException
-     */
-    private static boolean checkExistingTileValid(Map<Position, Tile> positionToTile, Map<Tile, Position> tileToPosition,
-                                                  Position position, Tile tile) throws WorldMapInconsistentException {
-        if (tile == null) {
-            // this exit is a dead end, do not go any further
-            return false;
-        }
-
-        // get the tile at the new position, and position of
-        // the new tile.
-        Tile tileToTest = positionToTile.get(position);
-        Position positionToTest = tileToPosition.get(tile);
-
-        if (positionToTest != null && !(position.equals(positionToTest))) {
-            // we have already placed this tile somewhere else
-            // this is bad, it means the map is inconsistent.
-            throw new WorldMapInconsistentException("Tile that should be at " + position +
-                    " is already assigned a different position at " + positionToTest);
-        }
-
-        if (tileToTest != null && tile != tileToTest) {
-            // if we get here, it means that a different
-            // tile is present at the location where we
-            // want to put our tile. This is bad.
-            throw new WorldMapInconsistentException("Position " + position +
-                    " is already occupied by a different tile.");
-        }
-
-        if (tileToTest == null) {
-            // tileToTest and positionToTest should be null
-            // iff the other is also null
-            assert positionToTest == null;
-
-            // there is nothing at the position
-            // where we want to put our tile.
-            // and the tile has not already been placed.
-            return true;
-
-        } else {
-
-            // we have already correctly placed this tile
-            // we do not want to place it again.
-            return false;
-        }
-
-
-    }
-
-    /**
-     * Add a tile and position for processing. We had t
-     * he tile to a queue of tiles to process,
-     * and also to two maps, a mapping from positions
-     * to tiles and a mapping from tiles to positions.
-     *
-     * @param tilesToProcess the queue of tiles to process further
-     * @param positionToTile the current mapping from positions to tiles
-     * @param tileToPosition the current mapping from tiles to positions
-     * @param position       the position to add for processing
-     * @param tile           the tile to add for processing
-     */
-    private static void addTileForProcessing(Queue<Tile> tilesToProcess,
-                                             Map<Position, Tile> positionToTile,
-                                             Map<Tile, Position> tileToPosition,
-                                             Position position, Tile tile) {
-        positionToTile.put(position, tile);
-        tileToPosition.put(tile, position);
-        tilesToProcess.add(tile);
-    }
-
-    /**
-     * Reset the state of the SparseTileArray to default.
-     */
-    private void reset() {
-        tileMap = new HashMap<>();
-        orderedTiles = new ArrayList<>();
     }
 }

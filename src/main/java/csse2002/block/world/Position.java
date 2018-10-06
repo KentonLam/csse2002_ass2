@@ -1,20 +1,19 @@
 package csse2002.block.world;
 
-import java.util.Objects;
-
 /**
- * Represents the position of a {@link Tile Tile}
- * in the {@link SparseTileArray SparseTileArray}.
- * @serial exclude
+ * Represents a two-dimensional position on the world map.
  */
 public class Position implements Comparable<Position> {
-    private int x;
-    private int y;
+
+    /** X position. */
+    private final int x;
+    /** Y position. */
+    private final int y;
 
     /**
-     * Construct a position for (x, y).
-     * @param x the x coordinate
-     * @param y the y coordinate
+     * Construct a position for (x, y)
+     * @param x the x coordinate.
+     * @param y the y coordinate.
      */
     public Position(int x, int y) {
         this.x = x;
@@ -22,16 +21,16 @@ public class Position implements Comparable<Position> {
     }
 
     /**
-     * Get the x coordinate.
-     * @return the x coordinate
+     * Returns the x coordinate.
+     * @return the x coordinate.
      */
     public int getX() {
         return x;
     }
 
     /**
-     * Get the y coordinate.
-     * @return the y coordinate
+     * Returns the y coordinate.
+     * @return the y coordinate.
      */
     public int getY() {
         return y;
@@ -39,84 +38,74 @@ public class Position implements Comparable<Position> {
 
     /**
      * Indicates whether some other object is "equal to" this one.
-     * (see
-     * <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
-     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>) <br>
-     * Two Positions are equal if {@literal getX() == other.getX() &&}
-     * {@literal getY() == other.getY()}
+     * (see <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
+     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
+     *
+     * Two positions are equal if and only if both their x and y parts are equal.
+     *
      * @param obj the object to compare to
-     * @return true if obj is an instance of Position and if obj.x == x and
-     *         obj.y == y.
+     * @return true if obj is an instance of
+     *  Position and if obj.x == x and obj.y == y.
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof  Position)) {
+        if (!(obj instanceof Position)) {
             return false;
         }
-        Position other = (Position) obj;
-        return other.x == x && other.y == y;
+        Position other = (Position)obj;
+        return x == other.getX() && y == other.getY();
     }
 
     /**
-     * Compute a hashCode that
-     * meets the contract of Object.hashCode <br>
-     * (see
-     * <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html">
-     * https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html</a>)
-     * @return a suitable hashcode for the Position
+     * Returns an integer such that this.equals(other) implies
+     * this.hashCode() == other.hashCode().
+     * @return a suitable hashcode for the Position.
      */
-    //@Override
-    //public int hashCode() {
-    //    return x + y;
-    //}
-
-
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        // Adapted from https://stackoverflow.com/a/263416
+        int hash = 17;
+        hash = 31*hash + x;
+        hash = 31*hash + y;
+        return hash;
     }
 
     /**
-     * Compare this position to another position. <br>
-     * return
+     * Compare this position to another position.
+     *
      * <ul>
-     *     <li> {@literal -1 if getX() < other.getX()} </li>
-     *     <li> {@literal -1 if getX() == other.getX()
-     *          and getY() < other.getY()} </li>
-     *     <li> {@literal 0 if getX() == other.getX()
-     *          and getY() == other.getY()} </li>
-     *     <li> {@literal 1 if getX() > other.getX()} </li>
-     *     <li> {@literal 1 if getX() == other.getX()
-     *          and getY() > other.getY()} </li>
+     *     <li>If this.x != other.x, returns -1 if this.x < other.x and 1
+     *     otherwise.</li>
+     *     <li>Otherwise, if this.y != other.y, returns -1 if this.y < other.y
+     *     and 1 otherwise.</li>
+     *     <li>Otherwise, returns 0.</li>
      * </ul>
+     *
      * @param other the other Position to compare to
-     * @return -1, 0, or 1 depending on conditions above
+     * @return -1 if this < other, 0 if this == other, 1 if this > other.
      */
-    @Override
     public int compareTo(Position other) {
-        if (getX() < other.getX()) {
-            return -1;
-        } else if (getX() > other.getX()) {
-            return 1;
-        } else if (getY() < other.getY()) {
-            return -1;
-        } else if (getY() > other.getY()) {
-            return 1;
-        } else {
-            return 0;
+        // Compare x directions first.
+        if (x != other.x) {
+            // This function results in the correct values. Proof is trivial.
+            return Integer.signum(x - other.x);
         }
+        // At this point, we know the x components are equal, so the result
+        // depends only on the y components.
+        return Integer.signum(y - other.y);
     }
 
     /**
-     * Convert this position to a string. <br>
-     * String should be {@literal "(<x>, <y>)"} where
-     * {@literal <x>} is the value returned by getX() and
-     * {@literal <y>} is the value returned by getY(). <br>
-     * Note the space following the comma.
-     * @return a string representation of the position {@literal "(<x>, <y>)"}
+     * Convert this position to a string. 
+     * String is of the format "(&lt;x&gt;, &lt;y&gt;)" where
+     * &lt;x&gt; is the value returned by getX() and
+     * &lt;y&gt; is the value returned by getY().
+     *
+     * @return a string representation of the position, "(<x>, <y>)".
      */
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "("+ x +", "+ y +")";
     }
+
 }
