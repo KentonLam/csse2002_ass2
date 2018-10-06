@@ -208,6 +208,8 @@ public class WorldMapTest {
             WorldMap map = new WorldMap(filename);
         } catch (WorldMapFormatException e) {
             return true;
+        } catch (Exception e) {
+            fail("Unepected exception in "+filename+" "+e);
         }
         return false;
     }
